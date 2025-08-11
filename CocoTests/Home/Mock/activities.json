@@ -1,0 +1,92 @@
+[
+    {
+        "id": 1,
+        "title": "Snorkeling Adventure in Nusa Penida",
+        "images": [
+            {
+                "id": 1,
+                "image_url": "https://example.com/images/nusa-penida-banner.jpg",
+                "image_type": "banner",
+                "activity_id": 1
+            },
+            {
+                "id": 2,
+                "image_url": "https://example.com/images/nusa-penida-thumb.jpg",
+                "image_type": "thumbnail",
+                "activity_id": 1
+            },
+            {
+                "id": 3,
+                "image_url": "https://example.com/images/nusa-penida-gallery1.jpg",
+                "image_type": "gallery",
+                "activity_id": 1
+            }
+        ],
+        "pricing": 499000.0,
+        "category": {
+            "id": 1,
+            "name": "Water Sports",
+            "description": "Experience exciting water-based activities"
+        },
+        "packages": [
+            {
+                "id": 1,
+                "name": "Morning Snorkeling Session",
+                "end_time": "12:00",
+                "start_time": "08:00",
+                "activity_id": 1,
+                "description": "Morning snorkeling session with breakfast included",
+                "max_participants": 10,
+                "min_participants": 2,
+                "price_per_person": 499000.0,
+                "host": {
+                    "bio": "Professional diving instructor with 5 years of experience",
+                    "name": "Made Wirawan",
+                    "profile_image_url": "https://example.com/hosts/made-wirawan.jpg"
+                },
+                "image_url": "https://example.com/packages/morning-session.jpg"
+            },
+            {
+                "id": 2,
+                "name": "Afternoon Snorkeling Session",
+                "end_time": "17:00",
+                "start_time": "13:00",
+                "activity_id": 1,
+                "description": "Afternoon snorkeling session with lunch included",
+                "max_participants": 10,
+                "min_participants": 2,
+                "price_per_person": 549000.0,
+                "host": {
+                    "bio": "Marine biologist and experienced diving guide",
+                    "name": "Ketut Suana",
+                    "profile_image_url": "https://example.com/hosts/ketut-suana.jpg"
+                },
+                "image_url": "https://example.com/packages/afternoon-session.jpg"
+            }
+        ],
+        "cancelable": "24 hours before activity starts",
+        "created_at": "2025-07-26T07:15:15Z",
+        "accessories": [
+            {
+                "id": 1,
+                "name": "Snorkeling Equipment"
+            },
+            {
+                "id": 2,
+                "name": "Life Jacket"
+            },
+            {
+                "id": 3,
+                "name": "Waterproof Camera"
+            }
+        ],
+        "description": "Explore the stunning underwater world of Nusa Penida with our professional guides. Perfect for beginners and experienced snorkelers alike.",
+        "destination": {
+            "id": 1,
+            "name": "Nusa Penida",
+            "image_url": "https://example.com/destinations/nusa-penida.jpg",
+            "description": "A beautiful island paradise known for its crystal clear waters and rich marine life"
+        },
+        "duration_minutes": 240
+    }
+]
