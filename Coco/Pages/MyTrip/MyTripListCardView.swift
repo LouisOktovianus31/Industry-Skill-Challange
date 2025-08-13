@@ -37,6 +37,8 @@ final class MyTripListCardView: UIView {
         imageView.loadImage(from: URL(string: dataModel.imageUrl))
     }
     
+    // Ganti dengan enum
+    
     private lazy var imageView: UIImageView = createImageView()
     private lazy var statusLabelView: CocoStatusLabelHostingController = CocoStatusLabelHostingController(
         title: "",
