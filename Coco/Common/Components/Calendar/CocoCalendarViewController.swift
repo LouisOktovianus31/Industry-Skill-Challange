@@ -79,6 +79,16 @@ final class CocoCalendarViewController: UIViewController {
 }
 
 extension CocoCalendarViewController: UICalendarSelectionSingleDateDelegate {
+    func dateSelection(_ selection: UICalendarSelectionSingleDate, canSelectDate dateComponents: DateComponents?) -> Bool {
+           guard let dateComponents = dateComponents,
+                 let date = Calendar.current.date(from: dateComponents) else {
+               return false
+           }
+
+           let todayDate = Calendar.current.startOfDay(for: Date())
+           return date >= todayDate
+       }
+    
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         currentSelectedDate = dateComponents?.date
     }
