@@ -39,7 +39,7 @@ struct HomeSearchSearchTray: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            Text("Filter Service")
+            Text("Search")
                 .multilineTextAlignment(.center)
                 .font(.jakartaSans(forTextStyle: .body, weight: .semibold))
                 .foregroundStyle(Token.additionalColorsBlack.toColor())
@@ -111,7 +111,7 @@ private extension HomeSearchSearchTray {
         }
     }
     
-    func createLastSearchView(name: String) -> some View {
+    func createLastSearchView(index: Int, name: String) -> some View {
         HStack(alignment: .center, spacing: 6.0) {
             Text(name)
                 .lineLimit(1)
@@ -121,6 +121,11 @@ private extension HomeSearchSearchTray {
             Image(uiImage: CocoIcon.icCross.image)
                 .resizable()
                 .frame(width: 15.0, height: 15.0)
+                .onTapGesture {
+                    withAnimation {
+                        _ = latestSearches.remove(at: index)
+                    }
+                }
         }
         .padding(.vertical, 12.0)
         .padding(.horizontal, 20.0)
@@ -136,12 +141,8 @@ private extension HomeSearchSearchTray {
         ScrollView(.horizontal) {
             HStack(alignment: .center, spacing: 16.0) {
                 ForEach(Array(latestSearches.enumerated()), id: \.0) { (index, location) in
-                    createLastSearchView(name: location.name)
-                        .onTapGesture {
-                            withAnimation {
-                                _ = latestSearches.remove(at: index)
-                            }
-                        }
+                    createLastSearchView(index: index, name: location.name)
+                        
                 }
             }
         }
