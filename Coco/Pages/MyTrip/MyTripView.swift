@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+
 protocol MyTripViewDelegate: MyTripListCardViewDelegate { }
 
 final class MyTripView: UIView {
