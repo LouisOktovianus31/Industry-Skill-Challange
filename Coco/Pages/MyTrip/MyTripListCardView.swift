@@ -85,46 +85,17 @@ final class MyTripListCardView: UIView {
         imageView.loadImage(from: URL(string: dataModel.imageUrl))
     }
     
-    // Ganti dengan enum
-    
     private lazy var imageView: UIImageView = createImageView()
     private lazy var statusLabelView: CocoStatusLabelHostingController = CocoStatusLabelHostingController(
         title: "",
         style: .pending
     )
-//    private lazy var dateLabel: UILabel = UILabel(
-//        font: .jakartaSans(forTextStyle: .footnote, weight: .medium),
-//        textColor: Token.additionalColorsBlack,
-//        numberOfLines: 2
-//    )
-//    private lazy var tripLabel: UILabel = UILabel(
-//        font: .jakartaSans(forTextStyle: .headline, weight: .semibold),
-//        textColor: Token.additionalColorsBlack,
-//        numberOfLines: 2
-//    )
-//    private lazy var locationLabel: UILabel = UILabel(
-//        font: .jakartaSans(forTextStyle: .footnote, weight: .regular),
-//        textColor: Token.grayscale90,
-//        numberOfLines: 2
-//    )
-//    private lazy var totalPaxLabel: UILabel = UILabel(
-//        font: .jakartaSans(forTextStyle: .footnote, weight: .semibold),
-//        textColor: Token.grayscale90,
-//        numberOfLines: 2
-//    )
-//    private lazy var totalPriceLabel: UILabel = UILabel(
-//        font: .jakartaSans(forTextStyle: .subheadline, weight: .semibold),
-//        textColor: Token.additionalColorsBlack,
-//        numberOfLines: 2
-//    )
-    
     private lazy var dateLabel: UILabel = MyTripLabelFactory.make(.date)
     private lazy var tripLabel: UILabel = MyTripLabelFactory.make(.trip)
     private lazy var locationLabel: UILabel = MyTripLabelFactory.make(.location)
     private lazy var totalPaxLabel: UILabel = MyTripLabelFactory.make(.totalPax)
     private lazy var totalPriceLabel: UILabel = MyTripLabelFactory.make(.totalPrice)
 
-    
     private lazy var detailButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
         action: { [weak self] in
             guard let self else { return }
