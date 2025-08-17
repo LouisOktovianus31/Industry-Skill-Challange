@@ -9,11 +9,7 @@ import Foundation
 import UIKit
 
 
-protocol MyTripViewDelegate: MyTripListCardViewDelegate { }
-
 final class MyTripView: UIView {
-    weak var delegate: MyTripViewDelegate?
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -23,39 +19,52 @@ final class MyTripView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureView(datas: [MyTripListCardDataModel]) {
-        contentStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        datas.enumerated().forEach { (index, data) in
-            let view: MyTripListCardView = MyTripListCardView()
-            view.delegate = delegate
-            view.configureView(dataModel: data, index: index)
-            contentStackView.addArrangedSubview(view)
-        }
+    func addMyTripListView(from view: UIView) {
+        myTripListView.subviews.forEach { $0.removeFromSuperview() }
+        myTripListView.addSubviewAndLayout(view)
     }
     
-    private lazy var contentStackView: UIStackView = createStackView()
+    func initUnderline() {
+        segmentControl.setSelectedSegmentUnderline()
+    }
+    
+    private lazy var segmentControl: UISegmentedControl = createSegmentControl()
+    private lazy var myTripListView: UIView = UIView()
 }
 
 private extension MyTripView {
     func setupView() {
         backgroundColor = Token.additionalColorsWhite
         
-        let scrollView: UIScrollView = UIScrollView()
-        scrollView.showsVerticalScrollIndicator = false
-        
-        scrollView.addSubviewAndLayout(contentStackView)
-        contentStackView.layout {
-            $0.widthAnchor(to: scrollView.widthAnchor)
-        }
-        
-        addSubviewAndLayout(scrollView, insets: UIEdgeInsets(edges: 21.0))
-    }
-    
-    func createStackView() -> UIStackView {
-        let stackView: UIStackView = UIStackView()
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [
+            segmentControl,
+            myTripListView
+        ])
         stackView.axis = .vertical
         stackView.spacing = 16.0
         
-        return stackView
+        addSubviewAndLayout(stackView, insets: UIEdgeInsets(edges: 21.0))
+        initConstrain()
+    }
+    
+    func createSegmentControl() -> UISegmentedControl  {
+        let segmentController = UISegmentedControl(items: ["Upcoming", "History"])
+        segmentController.selectedSegmentIndex = 0
+        
+        segmentController.setup()
+        
+        segmentController.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
+        
+        return segmentController
+    }
+    
+    @objc func segmentChanged(_ sender: UISegmentedControl) {
+        sender.setSelectedSegmentUnderline()
+    }
+    
+    func initConstrain() {
+        NSLayoutConstraint.activate([
+            segmentControl.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor)
+        ])
     }
 }

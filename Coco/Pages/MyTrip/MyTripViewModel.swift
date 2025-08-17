@@ -16,11 +16,18 @@ final class MyTripViewModel {
     
     private let fetcher: MyTripBookingListFetcherProtocol
     private var responses: [BookingDetails] = []
+    
+    private(set) lazy var collectionViewModel: MyTripListCollectionViewModelProtocol = {
+        let viewModel: MyTripListCollectionViewModel = MyTripListCollectionViewModel()
+        viewModel.delegate = self
+        
+        return viewModel
+    }()
 }
 
 extension MyTripViewModel: MyTripViewModelProtocol {
     func onViewWillAppear() {
-        actionDelegate?.configureView(datas: [])
+        actionDelegate?.contructCollectionView(viewModel: collectionViewModel)
         responses = []
         
         Task { @MainActor in
@@ -30,14 +37,16 @@ extension MyTripViewModel: MyTripViewModelProtocol {
             
             responses = response
             
-            actionDelegate?.configureView(datas: response.map({ listData in
+            collectionViewModel.updateMyTripListData(response.map({ listData in
                 MyTripListCardDataModel(bookingDetail: listData)
             }))
         }
     }
-    
-    func onTripListDidTap(at index: Int) {
-        guard index < responses.count else { return }
-        actionDelegate?.goToBookingDetail(with: responses[index])
+}
+
+extension MyTripViewModel: MyTripListCollectionViewModelDelegate {
+    func notifyCollectionViewTripItemDidTap(_ dataModel: MyTripListCardDataModel, indexPath: IndexPath) {
+        guard indexPath.row < responses.count else { return }
+        actionDelegate?.goToBookingDetail(with: responses[indexPath.row])
     }
 }

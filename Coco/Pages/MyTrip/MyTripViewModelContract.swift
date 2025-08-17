@@ -8,12 +8,11 @@
 import Foundation
 
 protocol MyTripViewModelAction: AnyObject {
-    func configureView(datas: [MyTripListCardDataModel])
+    func contructCollectionView(viewModel: MyTripListCollectionViewModelProtocol)
     func goToBookingDetail(with data: BookingDetails)
 }
 protocol MyTripViewModelProtocol: AnyObject {
     var actionDelegate: MyTripViewModelAction? { get set }
     
     func onViewWillAppear()
-    func onTripListDidTap(at index: Int)
 }

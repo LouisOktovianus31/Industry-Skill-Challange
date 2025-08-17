@@ -25,7 +25,11 @@ final class MyTripViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "My Trip"
-        thisView.delegate = self
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        thisView.initUnderline()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -42,8 +46,13 @@ final class MyTripViewController: UIViewController {
 }
 
 extension MyTripViewController: MyTripViewModelAction {
-    func configureView(datas: [MyTripListCardDataModel]) {
-        thisView.configureView(datas: datas)
+    func contructCollectionView(viewModel: MyTripListCollectionViewModelProtocol) {
+        let collectionViewController: MyTripListCollectionViewController = MyTripListCollectionViewController(viewModel: viewModel)
+        addChild(collectionViewController)
+        thisView.addMyTripListView(from: collectionViewController.view)
+        collectionViewController.didMove(toParent: self)
+        
+        
     }
     
     func goToBookingDetail(with data: BookingDetails) {
@@ -56,11 +65,5 @@ extension MyTripViewController: MyTripViewModelAction {
         )
         coordinator.parentCoordinator = AppCoordinator.shared
         coordinator.start()
-    }
-}
-
-extension MyTripViewController: MyTripViewDelegate {
-    func notifyTripListCardDidTap(at index: Int) {
-        viewModel.onTripListDidTap(at: index)
     }
 }

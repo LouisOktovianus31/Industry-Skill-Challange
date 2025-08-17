@@ -9,12 +9,20 @@ import Foundation
 import SwiftUI
 
 enum CocoButtonStyle {
+    case rounded
     case small
     case normal
     case large
     
     var padding: EdgeInsets {
         switch self {
+        case .rounded:
+            return .init(
+                top: 0,
+                leading: 6.0,
+                bottom: 0,
+                trailing: 6.0
+            )
         case .small:
             return .init(
                 top: 0,
@@ -41,6 +49,8 @@ enum CocoButtonStyle {
     
     var height: Double {
         switch self {
+        case .rounded:
+            return 44.0
         case .small:
             return 28.0
         case .normal:
@@ -52,6 +62,8 @@ enum CocoButtonStyle {
     
     var cornerRadius: Double {
         switch self {
+        case .rounded:
+            return height / 2
         case .small:
             return 12.0
         case .normal:
