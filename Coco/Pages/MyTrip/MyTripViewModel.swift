@@ -46,9 +46,11 @@ extension MyTripViewModel: MyTripViewModelProtocol {
             
             responses = response
             
-            allTripData = response.map({ listData in
-                MyTripListCardDataModel(bookingDetail: listData)
-            })
+            allTripData = response
+                .map({ listData in
+                    MyTripListCardDataModel(bookingDetail: listData)
+                })
+                .sorted { $0.date < $1.date }
             
             applyFilter(currentFilter)
         }
