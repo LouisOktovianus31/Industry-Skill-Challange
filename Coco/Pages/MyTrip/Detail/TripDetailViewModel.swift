@@ -9,16 +9,38 @@ import Foundation
 
 final class TripDetailViewModel {
     weak var actionDelegate: TripDetailViewModelAction?
+    weak var invitesOutput: TripDetailInvitesOutput?
     
     init(data: BookingDetails) {
         self.data = data
     }
     
     private let data: BookingDetails
+    
+    // Dummy Data
+    private(set) var travelers: [Traveler] = [
+            Traveler(name: "Jose L"),
+            Traveler(name: "Lusi O"),
+            Traveler(name: "Hany W"),
+        ]
 }
 
 extension TripDetailViewModel: TripDetailViewModelProtocol {
     func onViewDidLoad() {
         actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: data))
+        invitesOutput?.didUpdateTravelers(travelers) // initial travelers payload
+    }
+}
+
+// MARK: - Actions (dummy for now)
+extension TripDetailViewModel {
+    func addTravelerDummy(name: String) {
+        travelers.append(Traveler(name: name))
+        invitesOutput?.didUpdateTravelers(travelers)
+    }
+
+    func removeTraveler(id: UUID) {
+        travelers.removeAll { $0.id == id }
+        invitesOutput?.didUpdateTravelers(travelers)
     }
 }

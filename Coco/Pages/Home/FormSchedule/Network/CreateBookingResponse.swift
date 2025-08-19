@@ -11,7 +11,7 @@ struct CreateBookingResponse: JSONDecodable {
     let message: String
     let success: Bool
     let bookingDetails: BookingDetails
-
+    
     enum CodingKeys: String, CodingKey {
         case message
         case success
@@ -31,7 +31,10 @@ struct BookingDetails: JSONDecodable {
     let activityTitle: String
     let bookingCreatedAt: String
     let address: String
-
+    let host: HostPackage?
+    let user: UserBooking?
+    let facilities: [String]?
+    
     enum CodingKeys: String, CodingKey {
         case status
         case bookingId = "booking_id"
@@ -44,6 +47,9 @@ struct BookingDetails: JSONDecodable {
         case activityTitle = "activity_title"
         case bookingCreatedAt = "booking_created_at"
         case address
+        case host
+        case user
+        case facilities
     }
 }
 
@@ -52,11 +58,44 @@ struct BookingDestination: JSONDecodable {
     let name: String
     let imageUrl: String?
     let description: String
-
+    
     enum CodingKeys: String, CodingKey {
         case id
         case name
         case imageUrl = "image_url"
         case description
     }
+}
+
+struct HostPackage: JSONDecodable {
+    let id: Int
+    let name: String
+    let email: String?
+    let phone: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case email
+        case phone
+    }
+}
+
+struct UserBooking: JSONDecodable {
+    let id: Int
+    let name: String
+    let email: String?
+    let groupId: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case email
+        case groupId = "group_id"
+    }
+}
+
+struct Traveler: Hashable{
+    let id: UUID = .init()
+    let name: String
 }

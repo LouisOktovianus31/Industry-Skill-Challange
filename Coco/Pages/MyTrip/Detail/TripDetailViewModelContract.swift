@@ -14,5 +14,13 @@ protocol TripDetailViewModelAction: AnyObject {
 protocol TripDetailViewModelProtocol: AnyObject {
     var actionDelegate: TripDetailViewModelAction? { get set }
     
+    var invitesOutput: TripDetailInvitesOutput? { get set }
+    func addTravelerDummy(name: String)
+    func removeTraveler(id: UUID)
+    
     func onViewDidLoad()
+}
+
+protocol TripDetailInvitesOutput: AnyObject {
+    func didUpdateTravelers(_ travelers: [Traveler])
 }

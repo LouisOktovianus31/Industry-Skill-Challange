@@ -8,17 +8,22 @@
 import Foundation
 import UIKit
 
-final class TripDetailViewController: UIViewController {
+final class TripDetailViewController: UIViewController, TripDetailInvitesOutput {
     
     init(viewModel: TripDetailViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.viewModel.actionDelegate = self
+        self.viewModel.invitesOutput = self
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func didUpdateTravelers(_ travelers: [Traveler]) {
+        thisView.renderTravelers(travelers)
+        }
     
     override func loadView() {
         view = thisView
@@ -26,8 +31,16 @@ final class TripDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Trip Space"
+        
+        //        thisView.setInviteAction(target: self, action: #selector(inviteTapped))
         viewModel.onViewDidLoad()
-        title = "Detail My Trip"
+    }
+    
+    @objc private func inviteTapped() {
+        // pass
+        print("Invite traveler tapped")
+        
     }
     
     private let viewModel: TripDetailViewModelProtocol
@@ -42,6 +55,7 @@ extension TripDetailViewController: TripDetailViewModelAction {
             title: dataModel.status.text,
             style: dataModel.status.style
         )
+        addChild(labelVC)
         thisView.configureStatusLabelView(with: labelVC.view)
         labelVC.didMove(toParent: self)
     }
