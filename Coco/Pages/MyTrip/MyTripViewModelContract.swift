@@ -8,12 +8,19 @@
 import Foundation
 
 protocol MyTripViewModelAction: AnyObject {
-    func configureView(datas: [MyTripListCardDataModel])
+    func contructCollectionView(viewModel: MyTripListCollectionViewModelProtocol)
     func goToBookingDetail(with data: BookingDetails)
+    func goToRebookingDetail(with data: BookingDetails)
+    func segmentDidChange(to index: Int)
 }
 protocol MyTripViewModelProtocol: AnyObject {
     var actionDelegate: MyTripViewModelAction? { get set }
     
     func onViewWillAppear()
-    func onTripListDidTap(at index: Int)
+    
+    func applyFilter(_ filter: EventFilter)
+
+    func changeFilter(to filter: EventFilter)
+    
+    func getCurrentFilter() -> EventFilter
 }

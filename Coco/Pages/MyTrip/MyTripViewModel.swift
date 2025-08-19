@@ -6,9 +6,18 @@
 //
 
 import Foundation
+import UIKit
+
+enum EventFilter {
+    case upcoming
+    case history
+}
 
 final class MyTripViewModel {
     weak var actionDelegate: (any MyTripViewModelAction)?
+    
+    private var allTripData: [MyTripListCardDataModel] = []
+    private var currentFilter: EventFilter = .upcoming
     
     init(fetcher: MyTripBookingListFetcherProtocol = MyTripBookingListFetcher()) {
         self.fetcher = fetcher
@@ -16,11 +25,18 @@ final class MyTripViewModel {
     
     private let fetcher: MyTripBookingListFetcherProtocol
     private var responses: [BookingDetails] = []
+    
+    private(set) lazy var collectionViewModel: MyTripListCollectionViewModelProtocol = {
+        let viewModel: MyTripListCollectionViewModel = MyTripListCollectionViewModel()
+        viewModel.delegate = self
+        
+        return viewModel
+    }()
 }
 
 extension MyTripViewModel: MyTripViewModelProtocol {
     func onViewWillAppear() {
-        actionDelegate?.configureView(datas: [])
+        actionDelegate?.contructCollectionView(viewModel: collectionViewModel)
         responses = []
         
         Task { @MainActor in
@@ -30,14 +46,49 @@ extension MyTripViewModel: MyTripViewModelProtocol {
             
             responses = response
             
-            actionDelegate?.configureView(datas: response.map({ listData in
+            allTripData = response.map({ listData in
                 MyTripListCardDataModel(bookingDetail: listData)
-            }))
+            })
+            
+            applyFilter(currentFilter)
         }
     }
     
-    func onTripListDidTap(at index: Int) {
-        guard index < responses.count else { return }
-        actionDelegate?.goToBookingDetail(with: responses[index])
+    func applyFilter(_ filter: EventFilter) {
+        let today = Date()
+        let filteredData: [MyTripListCardDataModel]
+        
+        switch filter {
+        case .upcoming:
+            filteredData = allTripData.filter { $0.date >= Calendar.current.startOfDay(for: today) }
+            
+        case .history:
+            filteredData = allTripData.filter { $0.date < Calendar.current.startOfDay(for: today) }
+        }
+        
+        collectionViewModel.updateMyTripListData(filteredData)
+    }
+    
+    func changeFilter(to filter: EventFilter) {
+        currentFilter = filter
+        applyFilter(filter)
+    }
+    
+    func getCurrentFilter() -> EventFilter {
+        return currentFilter
+    }
+}
+
+extension MyTripViewModel: MyTripListCollectionViewModelDelegate {
+    func notifyCollectionViewTripItemRebookDidTap(_ id: Int) {
+        if let bookingDetails = responses.first(where: { $0.bookingId == id }) {
+            actionDelegate?.goToRebookingDetail(with: bookingDetails)
+        }
+    }
+    
+    func notifyCollectionViewTripItemDidTap(_ id: Int) {
+        if let bookingDetails = responses.first(where: { $0.bookingId == id }) {
+            actionDelegate?.goToBookingDetail(with: bookingDetails)
+        }
     }
 }
