@@ -1,3 +1,10 @@
+//
+//  MyTripSegmentControl.swift
+//  Coco
+//
+//  Created by Arin Juan Sari on 18/08/25.
+//
+
 import UIKit
 
 extension UISegmentedControl {

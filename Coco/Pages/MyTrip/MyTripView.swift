@@ -24,12 +24,20 @@ final class MyTripView: UIView {
         myTripListView.addSubviewAndLayout(view)
     }
     
-    func initUnderline() {
+    func initMyTripTabView(action: MyTripViewModelAction) {
+        self.action = action
+        segmentControl.setSelectedSegmentUnderline()
+    }
+    
+    func setSegmentIndex(_ index: Int) {
+        segmentControl.selectedSegmentIndex = index
         segmentControl.setSelectedSegmentUnderline()
     }
     
     private lazy var segmentControl: UISegmentedControl = createSegmentControl()
     private lazy var myTripListView: UIView = UIView()
+    
+    weak var action: MyTripViewModelAction?
 }
 
 private extension MyTripView {
@@ -60,6 +68,8 @@ private extension MyTripView {
     
     @objc func segmentChanged(_ sender: UISegmentedControl) {
         sender.setSelectedSegmentUnderline()
+        
+        action?.segmentDidChange(to: sender.selectedSegmentIndex)
     }
     
     func initConstrain() {

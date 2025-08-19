@@ -50,7 +50,8 @@ struct MyTripLabelFactory {
 }
 
 protocol MyTripListCardViewDelegate: AnyObject {
-    func notifyTripListCardDidTap(at index: Int)
+    func notifyTripListCardDidTap(at id: Int)
+    func notifyRebookDidTap(at id: Int)
 }
 
 final class MyTripListCardView: UICollectionViewCell {
@@ -66,12 +67,31 @@ final class MyTripListCardView: UICollectionViewCell {
     }
     
     func configureView(dataModel: MyTripListCardDataModel, index: Int) {
-        self.index = index
+        self.bookingId = dataModel.id
         dateLabel.text = dataModel.dateText
         tripLabel.text = dataModel.title
         locationLabel.text = dataModel.location
         bookedByLabel.text = dataModel.bookedBy
         imageView.loadImage(from: URL(string: dataModel.imageUrl))
+        
+        createButtonView(dataModel: dataModel, index: index)
+    }
+    
+    func createButtonView(dataModel: MyTripListCardDataModel, index: Int) {
+        let today = Calendar.current.startOfDay(for: Date())
+        
+        footerView.arrangedSubviews.forEach {
+            footerView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        
+        footerView.addArrangedSubview(detailButtonContainer.view)
+        
+        if dataModel.date >= today {
+            footerView.addArrangedSubview(buttonDownloadView)
+        } else {
+            footerView.addArrangedSubview(rebookButtonContainer.view)
+        }
     }
     
     private lazy var imageView: UIImageView = createImageView()
@@ -79,7 +99,7 @@ final class MyTripListCardView: UICollectionViewCell {
     private lazy var locationView: UIStackView = createLocationView()
     private lazy var leftSideView: UIStackView = createLeftSideView()
     private lazy var headerView: UIView = createHeaderView()
-    private lazy var footerView: UIView = createFooterView()
+    private lazy var footerView: UIStackView = createFooterView()
     private lazy var buttonDetailView: UIView = createButtonDetailView()
     private lazy var buttonDownloadView: UIView = createButtonDownloadView()
     
@@ -90,24 +110,34 @@ final class MyTripListCardView: UICollectionViewCell {
     private lazy var detailButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
         action: { [weak self] in
             guard let self else { return }
-            delegate?.notifyTripListCardDidTap(at: index)
+            delegate?.notifyTripListCardDidTap(at: bookingId)
         },
         text: "Detail",
         style: .normal,
         type: .primary,
         isStretch: true
     )
+    private lazy var rebookButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
+        action: { [weak self] in
+            guard let self else { return }
+            delegate?.notifyRebookDidTap(at: bookingId)
+        },
+        text: "Re - book",
+        style: .normal,
+        type: .secondary,
+        isStretch: true
+    )
     private lazy var downloadButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
         action: { [weak self] in
             guard let self else { return }
-            delegate?.notifyTripListCardDidTap(at: index)
+            delegate?.notifyTripListCardDidTap(at: bookingId)
         },
         image: Image("DownloadIcon"),
-        style: .rounded,
+        style: .circle,
         type: .primary,
         isStretch: false
     )
-    private var index: Int = 0
+    private var bookingId: Int = 0
 }
 
 private extension MyTripListCardView {
@@ -226,21 +256,18 @@ private extension MyTripListCardView {
             downloadButtonContainer.view
         ])
         downloadButtonContainer.view.layout {
-            $0.top(to: buttonDetailView.centerYAnchor)
-            $0.bottom(to: buttonDetailView.centerYAnchor)
+            $0.trailing(to: buttonDownloadView.trailingAnchor)
+            $0.leading(to: buttonDownloadView.leadingAnchor)
         }
         
         return buttonDownloadView
     }
     
     func createFooterView() -> UIStackView {
-        let footerView: UIStackView = UIStackView(arrangedSubviews: [
-            buttonDetailView,
-            downloadButtonContainer.view
-        ])
+        let footerView = UIStackView()
         footerView.axis = .horizontal
         footerView.spacing = 12.0
-        
+        footerView.distribution = .fill
         return footerView
     }
 }

@@ -8,7 +8,8 @@
 import Foundation
 
 protocol MyTripListCollectionViewModelDelegate: AnyObject {
-    func notifyCollectionViewTripItemDidTap(_ dataModel: MyTripListCardDataModel, indexPath: IndexPath)
+    func notifyCollectionViewTripItemDidTap(_ id: Int)
+    func notifyCollectionViewTripItemRebookDidTap(_ id: Int)
 }
 
 protocol MyTripListCollectionViewModelProtocol: AnyObject {
@@ -18,5 +19,6 @@ protocol MyTripListCollectionViewModelProtocol: AnyObject {
     var onDataUpdated: (() -> Void)? { get set }
         
     func updateMyTripListData(_ data: [MyTripListCardDataModel])
-    func onTripItemDidTap(_ dataModel: MyTripListCardDataModel, indexPath: IndexPath)
+    func onTripItemDidTap(_ id: Int)
+    func onTripItemRebookDidTap(_ id: Int)
 }

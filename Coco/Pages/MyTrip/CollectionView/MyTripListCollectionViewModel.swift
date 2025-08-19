@@ -18,11 +18,15 @@ final class MyTripListCollectionViewModel {
 }
 
 extension MyTripListCollectionViewModel: MyTripListCollectionViewModelProtocol {
+    func onTripItemRebookDidTap(_ id: Int) {
+        delegate?.notifyCollectionViewTripItemRebookDidTap(id)
+    }
+    
     func updateMyTripListData(_ data: [MyTripListCardDataModel]) {
         myTripListData = data
     }
     
-    func onTripItemDidTap(_ dataModel: MyTripListCardDataModel, indexPath: IndexPath) {
-        delegate?.notifyCollectionViewTripItemDidTap(dataModel, indexPath: indexPath)
+    func onTripItemDidTap(_ id: Int) {
+        delegate?.notifyCollectionViewTripItemDidTap(id)
     }
 }

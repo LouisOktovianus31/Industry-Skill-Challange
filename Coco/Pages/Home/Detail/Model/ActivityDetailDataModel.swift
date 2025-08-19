@@ -35,6 +35,43 @@ struct ActivityDetailDataModel: Equatable {
         let id: Int
     }
     
+    init(_ bookingDetails: BookingDetails) {
+        title = bookingDetails.activityTitle
+        location = bookingDetails.destination.name
+        imageUrlsString = [bookingDetails.destination.imageUrl ?? ""]
+        
+        detailInfomation = ActivitySectionLayout(
+            title: "Details",
+            content: ""
+        )
+        providerDetail = ActivitySectionLayout(
+            title: "Trip Provider",
+            content: ProviderDetail(
+                name: "",
+                description: "",
+                imageUrlString: ""
+            )
+        )
+        tripFacilities = ActivitySectionLayout(
+            title: "This Trip Includes",
+            content: []
+        )
+        tnc = ""
+        
+        availablePackages = ActivitySectionLayout(
+            title: "Available Packages",
+            content: [Package(
+                imageUrlString: bookingDetails.destination.imageUrl ?? "",
+                name: bookingDetails.packageName,
+                description: "",
+                price: "",
+                id: bookingDetails.bookingId
+            )]
+        )
+        
+        hiddenPackages = []
+    }
+    
     init(_ response: Activity) {
         title = response.title
         location = response.destination.name

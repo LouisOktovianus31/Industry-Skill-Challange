@@ -57,15 +57,19 @@ extension MyTripListCollectionViewController: UICollectionViewDataSource {
 }
 
 extension MyTripListCollectionViewController: MyTripListCardViewDelegate {
-    func notifyTripListCardDidTap(at index: Int) {
-        viewModel.onTripItemDidTap(viewModel.myTripListData[index], indexPath: IndexPath(item: index, section: 0))
+    func notifyRebookDidTap(at id: Int) {
+        viewModel.onTripItemRebookDidTap(id)
+    }
+    
+    func notifyTripListCardDidTap(at id: Int) {
+        viewModel.onTripItemDidTap(id)
     }
 }
 
 extension MyTripListCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectecTripData = viewModel.myTripListData[indexPath.row]
-        viewModel.onTripItemDidTap(selectecTripData, indexPath: indexPath)
+        viewModel.onTripItemDidTap(selectecTripData.id)
     }
 }
 
@@ -73,6 +77,7 @@ private extension MyTripListCollectionViewController {
     func createCollectionView() -> UICollectionView {
         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.contentInset = .init(top: 0, left: 0, bottom: 8.0, right: 0)
         collectionView.register(MyTripListCardView.self, forCellWithReuseIdentifier: "MyTripListCardView")
         
@@ -96,6 +101,7 @@ private extension MyTripListCollectionViewController {
             section.boundarySupplementaryItems = [sectionHeader]
             section.interGroupSpacing = CGFloat(20)
             section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 8.0, trailing: 0)
+
             return section
         }
     }
