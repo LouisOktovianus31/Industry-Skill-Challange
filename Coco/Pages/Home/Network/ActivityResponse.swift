@@ -11,7 +11,7 @@ struct Activity: JSONDecodable {
     let id: Int
     let title: String
     let images: [ActivityImage]
-    let pricing: Double
+    let pricing: String
     let category: ActivityCategory
     let packages: [ActivityPackage]
     let cancelable: String
@@ -63,7 +63,7 @@ struct ActivityPackage: JSONDecodable {
     let description: String
     let maxParticipants: Int
     let minParticipants: Int
-    let pricePerPerson: Double
+    let pricePerPerson: String
     let host: Host
     let imageUrl: String
 
