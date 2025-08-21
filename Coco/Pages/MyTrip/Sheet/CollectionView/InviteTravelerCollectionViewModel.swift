@@ -29,8 +29,8 @@ extension InviteTravelerCollectionViewModel: InviteTravellerCollectionViewModelP
             return
         }
         
-        guard emailTravelerListData.count < data.participants else {
-            print("Cannot add more travelers. Participants: \(data.participants)")
+        guard emailTravelerListData.count < data.participants ?? 0 else {
+            print("Cannot add more travelers. Participants: \(data.participants ?? 0)")
             return
         }
         

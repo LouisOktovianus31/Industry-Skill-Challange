@@ -56,13 +56,13 @@ struct BookingDetailDataModel {
         }
         
         status = StatusLabel(text: bookingStatus, style: statusStyle)
-        imageString = bookingDetail.destination.imageUrl ?? ""
+        imageString = bookingDetail.destinationImage
         activityName = bookingDetail.activityTitle
-        packageName = bookingDetail.packageName
-        location = bookingDetail.destination.name
-        paxNumber = bookingDetail.participants
+        packageName = bookingDetail.packageName ?? ""
+        location = bookingDetail.destinationName
+        paxNumber = bookingDetail.participants ?? 0
         //        price = bookingDetail.totalPrice
-        address = bookingDetail.address
+        address = bookingDetail.address ?? ""
         //        bookingDateText = bookingDetail.activityDate
         
         // display date
@@ -73,7 +73,7 @@ struct BookingDetailDataModel {
         }
         
         // display price
-        priceText = Formatters.idr(bookingDetail.totalPrice)
+        priceText = Formatters.idr(bookingDetail.totalPrice ?? 0)
         
         if let vendor = bookingDetail.host {
             self.host = HostDetail(name: vendor.name, email: vendor.email ?? "host@gmail.com", phone: vendor.phone ?? "+62 812 3456 789")
@@ -91,7 +91,7 @@ final class TripFacilitiesProvider {
     private init() {}
     
     func facilities(for booking: BookingDetails) -> [String] {
-        let name = booking.packageName.lowercased()
+        let name = booking.packageName?.lowercased() ?? ""
         let title = booking.activityTitle.lowercased()
         
         // Contoh aturan dummy
@@ -101,7 +101,7 @@ final class TripFacilitiesProvider {
         if name.contains("liveaboard") {
             return ["Meals", "Cabin", "Dive Guide", "Towels"]
         }
-        if booking.destination.name.lowercased().contains("bali") {
+        if booking.destinationName.lowercased().contains("bali") {
             return ["Certified Guide", "Free Meal", "Water Bottle"]
         }
         // default
