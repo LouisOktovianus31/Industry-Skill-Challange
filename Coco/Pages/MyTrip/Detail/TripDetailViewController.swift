@@ -23,7 +23,7 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
     
     func didUpdateTravelers(_ travelers: [Traveler]) {
         thisView.renderTravelers(travelers)
-        }
+    }
     
     override func loadView() {
         view = thisView
@@ -48,6 +48,12 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
 }
 
 extension TripDetailViewController: TripDetailViewModelAction {
+    func configureFooter(viewModel: InviteTravelerViewModelProtocol) {
+        thisView.configureFooterViewAction {
+            self.addTripMemberTapped(viewModel: viewModel)
+        }
+    }
+    
     func configureView(dataModel: BookingDetailDataModel) {
         thisView.configureView(dataModel)
         
@@ -58,5 +64,19 @@ extension TripDetailViewController: TripDetailViewModelAction {
         addChild(labelVC)
         thisView.configureStatusLabelView(with: labelVC.view)
         labelVC.didMove(toParent: self)
+    }
+    
+    private func addTripMemberTapped(viewModel: InviteTravelerViewModelProtocol) {
+        let inviteTravellerViewController = InviteTravelerViewController(viewModel: viewModel)
+        inviteTravellerViewController.title = "Invite Traveler"
+        let nav = UINavigationController(rootViewController: inviteTravellerViewController)
+        nav.modalPresentationStyle = .pageSheet
+        
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        }
+        
+        present(nav, animated: true, completion: nil)
     }
 }

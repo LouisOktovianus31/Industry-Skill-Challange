@@ -16,19 +16,22 @@ struct CocoInputTextFieldStyle: TextFieldStyle {
     let trailingIcon: ImageHandler?
     let shouldInterceptFocus: Bool
     let onFocusedAction: ((Bool) -> Void)?
+    var onSubmit: ((String) -> Void)?
     
     init(
         leadingIcon: UIImage?,
         placeHolder: String?,
         trailingIcon: ImageHandler?,
         shouldInterceptFocus: Bool,
-        onFocusedAction: ((Bool) -> Void)?
+        onFocusedAction: ((Bool) -> Void)?,
+        onSubmit: ((String) -> Void)?
     ) {
         self.leadingIcon = leadingIcon
         self.placeHolder = placeHolder
         self.trailingIcon = trailingIcon
         self.shouldInterceptFocus = shouldInterceptFocus
         self.onFocusedAction = onFocusedAction
+        self.onSubmit = onSubmit
     }
     
     func _body(configuration: TextField<Self._Label>) -> some View {
@@ -56,9 +59,9 @@ struct CocoInputTextFieldStyle: TextFieldStyle {
                     }
                 }
             }
-
+            
             Spacer()
-                
+            
             if let trailingIcon: ImageHandler {
                 Rectangle()
                     .frame(width: 1.0, height: 18.0)

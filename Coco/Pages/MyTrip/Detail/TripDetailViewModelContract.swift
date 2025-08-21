@@ -9,6 +9,7 @@ import Foundation
 
 protocol TripDetailViewModelAction: AnyObject {
     func configureView(dataModel: BookingDetailDataModel)
+    func configureFooter(viewModel: InviteTravelerViewModelProtocol)
 }
 
 protocol TripDetailViewModelProtocol: AnyObject {
