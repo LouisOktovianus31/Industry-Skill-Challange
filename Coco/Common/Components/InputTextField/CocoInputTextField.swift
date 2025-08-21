@@ -21,6 +21,8 @@ struct CocoInputTextField: View {
     @FocusState private var isFocused: Bool
     private let onFocusedAction: ((Bool) -> Void)?
     private var onSubmit: ((String) -> Void)?
+    private var error: Bool = false
+    private var errorMessage: String?
     
     init(
         leadingIcon: UIImage? = nil,
@@ -29,7 +31,9 @@ struct CocoInputTextField: View {
         placeholder: String?,
         shouldInterceptFocus: Bool = false,
         onFocusedAction: ((Bool) -> Void)? = nil,
-        onSubmit: ((String) -> Void)? = nil
+        onSubmit: ((String) -> Void)? = nil,
+        error: Bool = false,
+        errorMessage: String? = nil
     ) {
         self.leadingIcon = leadingIcon
         _currentTypedText = currentTypedText
@@ -38,6 +42,8 @@ struct CocoInputTextField: View {
         self.shouldInterceptFocus = shouldInterceptFocus
         self.onFocusedAction = onFocusedAction
         self.onSubmit = onSubmit
+        self.error = error
+        self.errorMessage = errorMessage
     }
     
     var body: some View {
@@ -52,8 +58,7 @@ struct CocoInputTextField: View {
                 placeHolder: placeholder,
                 trailingIcon: trailingIcon,
                 shouldInterceptFocus: shouldInterceptFocus,
-                onFocusedAction: onFocusedAction,
-                onSubmit: onSubmit
+                onFocusedAction: onFocusedAction
             )
         )
         .focused($isFocused)
@@ -64,6 +69,17 @@ struct CocoInputTextField: View {
         .frame(height: kInputHeight)
         .onSubmit {
             onSubmit?(currentTypedText)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(error ? Color.red : Color.gray.opacity(0.3), lineWidth: 1)
+        )
+        
+        if error, let errorMessage = errorMessage {
+            Text(errorMessage)
+                .font(.footnote)
+                .foregroundColor(.red)
+                .padding(.horizontal, 4)
         }
     }
 }

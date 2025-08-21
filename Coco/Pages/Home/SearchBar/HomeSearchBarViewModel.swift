@@ -22,6 +22,8 @@ final class HomeSearchBarViewModel: ObservableObject {
     let isTypeAble: Bool
     let placeholderText: String
     var onSubmit: ((String) -> Void)?
+    var error: Bool = false
+    var errorMessage: String?
     
     init(
         leadingIcon: UIImage?,
@@ -30,6 +32,8 @@ final class HomeSearchBarViewModel: ObservableObject {
         trailingIcon: ImageHandler?,
         isTypeAble: Bool,
         onSubmit: ((String) -> Void)? = nil,
+        error: Bool = false,
+        errorMessage: String? = nil,
         delegate: HomeSearchBarViewModelDelegate?
     ) {
         self.leadingIcon = leadingIcon
@@ -38,6 +42,8 @@ final class HomeSearchBarViewModel: ObservableObject {
         self.trailingIcon = trailingIcon
         self.isTypeAble = isTypeAble
         self.onSubmit = onSubmit
+        self.error = error
+        self.errorMessage = errorMessage
         self.delegate = delegate
     }
     
