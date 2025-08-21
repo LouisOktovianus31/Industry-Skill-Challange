@@ -8,7 +8,8 @@
 import Foundation
 
 enum APIConfig {
-    static let baseURL = "https://guffnieowbgkilwcjkks.supabase.co/rest/v1/"
+//    static let baseURL = "https://guffnieowbgkilwcjkks.supabase.co/rest/v1/"
+    static let baseURL = "https://3vlxp6c9-4000.asse.devtunnels.ms/rest/v1/"
 }
 
 protocol EndpointProtocol {
