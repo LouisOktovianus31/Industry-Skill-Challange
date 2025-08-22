@@ -54,11 +54,11 @@ struct MyTripListCardDataModel {
         
         //        statusLabel = StatusLabel(text: bookingStatus, style: statusStyle)
         id = bookingDetail.bookingId
-        imageUrl = bookingDetail.destination.imageUrl ?? ""
+        imageUrl = bookingDetail.destinationImage
         dateText = dateResult
         date = actualDate
         title = bookingDetail.activityTitle
-        location = bookingDetail.destination.name
+        location = bookingDetail.destinationName
         bookedBy = "Booked by Raissa"
     }
 }

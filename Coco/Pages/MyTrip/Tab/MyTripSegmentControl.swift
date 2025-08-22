@@ -14,7 +14,6 @@ extension UISegmentedControl {
     private var underlineHeight: CGFloat { 2 }
     
     private var segmentWidth: CGFloat {
-//        underlineWidth / CGFloat(numberOfSegments)
          bounds.width / CGFloat(numberOfSegments)
     }
     
@@ -23,7 +22,6 @@ extension UISegmentedControl {
     }
     
     private var underlineMinX: CGFloat {
-//        segmentMinX
         segmentMinX + (segmentWidth/2) - (underlineWidth/2)
     }
     

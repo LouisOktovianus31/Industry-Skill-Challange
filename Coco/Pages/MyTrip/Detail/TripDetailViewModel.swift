@@ -44,6 +44,21 @@ final class TripDetailViewModel {
         self.data = data
     }
     
+    private let data: BookingDetails
+    
+    // Dummy Data
+    private(set) var travelers: [Traveler] = [
+        Traveler(name: "Jose L"),
+        Traveler(name: "Lusi O"),
+        Traveler(name: "Hany W"),
+    ]
+    
+    private(set) lazy var inviteTravelerViewModel: InviteTravelerViewModelProtocol = {
+        let viewModel: InviteTravelerViewModel = InviteTravelerViewModel(data: data)
+//        viewModel.delegate = self
+        
+        return viewModel
+    }()
 }
 
 //extension TripDetailViewModel: TripDetailViewModelProtocol {
@@ -56,6 +71,9 @@ final class TripDetailViewModel {
 
 extension TripDetailViewModel: TripDetailViewModelProtocol {
     func onViewDidLoad() {
+        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: data))
+        actionDelegate?.configureFooter(viewModel: inviteTravelerViewModel)
+        
         if let data {                       // sudah ada data → langsung render
             actionDelegate?.configureView(dataModel: .init(trip: data))
             invitesOutput?.didUpdateTravelers(travelers)
@@ -82,6 +100,8 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
                 print("TripDetail fetch error:", error)
             }
         }
+
+//        invitesOutput?.didUpdateTravelers(travelers) // initial travelers payload
     }
 }
 

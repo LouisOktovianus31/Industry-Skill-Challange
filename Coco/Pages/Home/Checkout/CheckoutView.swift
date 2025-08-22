@@ -19,13 +19,14 @@ final class CheckoutView: UIView {
     }
     
     func configureView(_ data: BookingDetails) {
-        if let imageUrl: String = data.destination.imageUrl, imageUrl.count > 0{
+        let imageUrl: String = data.destinationImage
+        if imageUrl.count > 0{
             activityImage.loadImage(from: URL(string: imageUrl))
         }
         
         activityTitle.text = data.activityTitle
         activityDescription.text = data.packageName
-        activityLocationTitle.text = data.destination.name
+        activityLocationTitle.text = data.destinationName
         
         let vacationStackView: UIStackView = UIStackView()
         vacationStackView.axis = .vertical
