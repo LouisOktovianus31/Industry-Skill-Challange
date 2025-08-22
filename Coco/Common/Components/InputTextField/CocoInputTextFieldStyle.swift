@@ -56,9 +56,9 @@ struct CocoInputTextFieldStyle: TextFieldStyle {
                     }
                 }
             }
-
+            
             Spacer()
-                
+            
             if let trailingIcon: ImageHandler {
                 Rectangle()
                     .frame(width: 1.0, height: 18.0)

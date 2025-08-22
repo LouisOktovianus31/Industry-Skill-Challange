@@ -144,10 +144,10 @@ private extension HomeViewModel {
             )
         }
         
-        let sortedData = responseMapActivity.sorted { $0.pricing < $1.pricing }
+        let sortedData = responseMapActivity.sorted { (Double($0.pricing) ?? 0) < (Double($1.pricing) ?? 0) }
         
-        let minPrice: Double = sortedData.first?.pricing ?? 0
-        let maxPrice: Double = sortedData.last?.pricing ?? 0
+        let minPrice: Double = Double(sortedData.first?.pricing ?? "0") ?? 0
+        let maxPrice: Double = Double(sortedData.last?.pricing ?? "0") ?? 0
         let filterDataModel: HomeSearchFilterTrayDataModel = HomeSearchFilterTrayDataModel(
             filterPillDataState: activityValues,
             priceRangeModel: HomeSearchFilterPriceRangeModel(

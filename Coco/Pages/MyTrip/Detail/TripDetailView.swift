@@ -56,13 +56,13 @@ struct BookingDetailDataModel {
         }
         
         status = StatusLabel(text: bookingStatus, style: statusStyle)
-        imageString = bookingDetail.destination.imageUrl ?? ""
+        imageString = bookingDetail.destinationImage
         activityName = bookingDetail.activityTitle
-        packageName = bookingDetail.packageName
-        location = bookingDetail.destination.name
-        paxNumber = bookingDetail.participants
+        packageName = bookingDetail.packageName ?? ""
+        location = bookingDetail.destinationName
+        paxNumber = bookingDetail.participants ?? 0
         //        price = bookingDetail.totalPrice
-        address = bookingDetail.address
+        address = bookingDetail.address ?? ""
         //        bookingDateText = bookingDetail.activityDate
         
         // display date
@@ -73,7 +73,7 @@ struct BookingDetailDataModel {
         }
         
         // display price
-        priceText = Formatters.idr(bookingDetail.totalPrice)
+        priceText = Formatters.idr(bookingDetail.totalPrice ?? 0)
         
         if let vendor = bookingDetail.host {
             self.host = HostDetail(name: vendor.name, email: vendor.email ?? "host@gmail.com", phone: vendor.phone ?? "+62 812 3456 789")
@@ -91,7 +91,7 @@ final class TripFacilitiesProvider {
     private init() {}
     
     func facilities(for booking: BookingDetails) -> [String] {
-        let name = booking.packageName.lowercased()
+        let name = booking.packageName?.lowercased() ?? ""
         let title = booking.activityTitle.lowercased()
         
         // Contoh aturan dummy
@@ -101,7 +101,7 @@ final class TripFacilitiesProvider {
         if name.contains("liveaboard") {
             return ["Meals", "Cabin", "Dive Guide", "Towels"]
         }
-        if booking.destination.name.lowercased().contains("bali") {
+        if booking.destinationName.lowercased().contains("bali") {
             return ["Certified Guide", "Free Meal", "Water Bottle"]
         }
         // default
@@ -166,19 +166,17 @@ final class TripDetailView: UIView {
         }
     }
     
-    private let footer = StickyFooterView()
+    func configureFooterViewAction(action: @escaping () -> Void) {
+        self.footerAction = action
+        footer.button.addTarget(self, action: #selector(handleFooterTap), for: .touchUpInside)
+    }
     
-    private lazy var inviteButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Invite traveler to space", for: .normal)
-        button.setTitleColor(Token.additionalColorsWhite, for: .normal)
-        button.backgroundColor = Token.mainColorPrimary
-        button.layer.cornerRadius = 25
-        button.titleLabel?.font = .jakartaSans(forTextStyle: .body, weight: .semibold)
-        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 16, bottom: 14, right: 16)
-        button.addTarget(self, action: #selector(addTripMemberTapped), for: .touchUpInside)
-        return button
-    }()
+    @objc private func handleFooterTap() {
+        footerAction?()
+    }
+    
+    private var footerAction: (() -> Void)?
+    private let footer = StickyFooterView()
     
     private lazy var activityDetailView: UIView = createActivityDetailView()
     private lazy var activityImage: UIImageView = createImageView()
@@ -556,7 +554,6 @@ private extension TripDetailView {
             footer.trailingAnchor.constraint(equalTo: trailingAnchor),
             footer.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-        footer.button.addTarget(self, action: #selector(addTripMemberTapped), for: .touchUpInside)
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -594,7 +591,7 @@ private extension TripDetailView {
         contentStackView.addArrangedSubview(vendorSectionView)
         contentStackView.addArrangedSubview(actionSection)
         contentStackView.addArrangedSubview(importantNoticeSection)
-//        contentStackView.addArrangedSubview(addressSection)
+        //        contentStackView.addArrangedSubview(addressSection)
         
         backgroundColor = Token.additionalColorsWhite
     }
@@ -787,8 +784,5 @@ private extension TripDetailView {
                 .bottom(to: container.bottomAnchor)
         }
         return container
-    }
-    @objc private func addTripMemberTapped() {
-        print("Invite traveler to space")
     }
 }

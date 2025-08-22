@@ -26,7 +26,7 @@ final class StickyFooterView: UIView {
         button.backgroundColor = Token.mainColorPrimary
         button.layer.cornerRadius = 25
         button.titleLabel?.font = .jakartaSans(forTextStyle: .body, weight: .semibold)
-        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 16, bottom: 14, right: 16)
+        button.contentEdgeInsets = UIEdgeInsets(top: 14, left: 16, bottom: 14, right: 16)
 
         addSubviews([sep, button])
         sep.translatesAutoresizingMaskIntoConstraints = false
