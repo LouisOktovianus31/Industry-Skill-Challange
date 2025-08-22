@@ -8,14 +8,26 @@
 import Foundation
 import UIKit
 
+//struct MyTripTabItem: TabItemRepresentable {
+//    var tabTitle: String { "MyTrip" }
+//    var defaultTabIcon: UIImage? { CocoIcon.icTabIconTrip.image }
+//    var selectedTabIcon: UIImage? { CocoIcon.icTabIconTripFill.image }
+//
+//    func makeRootViewController() -> UIViewController {
+//        let viewModel: MyTripViewModel = MyTripViewModel()
+//        let vc: MyTripViewController = MyTripViewController(viewModel: viewModel)
+//        return vc
+//    }
+//}
+
 struct MyTripTabItem: TabItemRepresentable {
     var tabTitle: String { "MyTrip" }
     var defaultTabIcon: UIImage? { CocoIcon.icTabIconTrip.image }
     var selectedTabIcon: UIImage? { CocoIcon.icTabIconTripFill.image }
 
     func makeRootViewController() -> UIViewController {
-        let viewModel: MyTripViewModel = MyTripViewModel()
-        let vc: MyTripViewController = MyTripViewController(viewModel: viewModel)
+        let viewModel = TripDetailViewModel(bookingId: 1)
+        let vc: TripDetailViewController = TripDetailViewController(viewModel: viewModel)
         return vc
     }
 }

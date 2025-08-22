@@ -9,6 +9,7 @@ import Foundation
 
 protocol TripDetailViewModelAction: AnyObject {
     func configureView(dataModel: BookingDetailDataModel)
+    func openExternalURL(_ url: URL)
 }
 
 protocol TripDetailViewModelProtocol: AnyObject {

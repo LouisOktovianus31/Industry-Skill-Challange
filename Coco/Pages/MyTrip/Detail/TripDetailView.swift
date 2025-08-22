@@ -86,6 +86,26 @@ struct BookingDetailDataModel {
     }
 }
 
+extension BookingDetailDataModel {
+    init(trip: TripBookingDetails) {
+        let style: CocoStatusLabelStyle = trip.date < Calendar.current.startOfDay(for: Date()) ? .success : .refund
+        self.status = .init(text: trip.status.capitalized, style: style)
+
+        imageString   = trip.destinationImage ?? ""
+        activityName  = trip.activityTitle
+        packageName   = trip.packageName
+        location      = trip.destinationName
+        paxNumber     = trip.participants
+        address       = trip.destinationName
+        bookingDateDisplay = Formatters.tripDateDisplay.string(from: trip.date)
+        priceText = Formatters.idr((trip.totalPrice as NSDecimalNumber).doubleValue)
+
+        host = nil
+        bookedByName = "—"
+        facilities = trip.includedAccessories
+    }
+}
+
 final class TripFacilitiesProvider {
     static let shared = TripFacilitiesProvider()
     private init() {}
@@ -133,7 +153,8 @@ final class TripDetailView: UIView {
         priceDetailPrice.text = data.priceText
         
         addressLabel.text = data.address
-        locationTextLabel.text = data.location
+//        locationTextLabel.text = data.location
+        locationSection.configure(text: data.location)
         
         bookedByNameValueLabel.text = data.bookedByName
         
@@ -149,10 +170,10 @@ final class TripDetailView: UIView {
             vendorSectionView.isHidden = false
         }
         
-        if !data.facilities.isEmpty {
-            let facilities = FacilitiesSectionView(title: "This Trip Includes", items: data.facilities)
-            insertFacilitiesSection(facilities)
-        }
+//        if !data.facilities.isEmpty {
+//            let facilities = FacilitiesSectionView(title: "This Trip Includes", items: data.facilities)
+//            insertFacilitiesSection(facilities)
+//        }
         
     }
     
@@ -207,73 +228,13 @@ final class TripDetailView: UIView {
     )
     
     // Location (Maps)
-    private lazy var locationIconView: UIImageView = {
-        let iv = UIImageView(image: CocoIcon.icPinPointBlue.image)
-        iv.contentMode = .scaleAspectFit
-        iv.setContentHuggingPriority(.required, for: .horizontal)
-        iv.setContentCompressionResistancePriority(.required, for: .horizontal)
-        return iv
-    }()
+    private let locationSection = LocationSectionView()
     
-    private lazy var locationTextLabel: UILabel = {
-        let label = UILabel(
-            font: .jakartaSans(forTextStyle: .body, weight: .regular),
-            textColor: Token.grayscale90,
-            numberOfLines: 1
-        )
-        label.text = "Location…"
-        label.lineBreakMode = .byTruncatingTail
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        return label
-    }()
-    
-    private lazy var locationChevronView: UIImageView = {
-        let iv = UIImageView(image: CocoIcon.icChevronRight.image)
-        //        let img = CocoIcon.icChevronRight.image ?? UIImage(systemName: "chevronRight")
-        //        let iv = UIImageView(image: img)
-        iv.tintColor = Token.grayscale60
-        iv.contentMode = .scaleAspectFit
-        iv.setContentHuggingPriority(.required, for: .horizontal)
-        iv.setContentCompressionResistancePriority(.required, for: .horizontal)
-        return iv
-    }()
-    
-    private lazy var locationRow: UIView = {
-        let container = UIView()
-        container.layer.cornerRadius = 6
-        container.layer.borderWidth = 1
-        container.layer.borderColor = Token.additionalColorsLine.cgColor
-        container.backgroundColor = Token.additionalColorsWhite
-        container.isUserInteractionEnabled = true
-        
-        container.layout { $0.height(52) }
-        
-        container.addSubviews([locationIconView, locationTextLabel, locationChevronView])
-        
-        locationIconView.layout {
-            $0.leading(to: container.leadingAnchor, constant: 12)
-                .centerY(to: container.centerYAnchor)
-                .size(22)
-        }
-        
-        locationTextLabel.layout {
-            $0.leading(to: locationIconView.trailingAnchor, constant: 10)
-                .trailing(to: locationChevronView.leadingAnchor, constant: -10)
-                .centerY(to: container.centerYAnchor)
-        }
-        
-        locationChevronView.layout {
-            $0.trailing(to: container.trailingAnchor, constant: -12)
-                .centerY(to: container.centerYAnchor)
-                .size(22)
-        }
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLocationRow))
-        container.addGestureRecognizer(tap)
-        
-        return container
-    }()
+    var onLocationTapped: (() -> Void)? {
+        get { locationSection.onTap }
+        set { locationSection.onTap = newValue }
+    }
+
     
     private lazy var bookingDateSection: UIView = createSectionTitle(title: "Date Booking", view: bookingDateLabel)
     private lazy var bookingDateLabel: UILabel = UILabel(
@@ -358,7 +319,6 @@ final class TripDetailView: UIView {
         l.setContentHuggingPriority(.required, for: .horizontal)
         return l
     }()
-    
     
     //    private lazy var packageNameSection: UIView = createSectionTitle(title: "Package Name", view: activityDescriptionTitle)
     //
@@ -512,14 +472,14 @@ private extension TripDetailView {
         print("Location row tapped")
     }
     
-    private func insertFacilitiesSection(_ view: UIView) {
-        // Contoh: taruh setelah locationRow (cari index-nya di stack)
-        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
-            contentStackView.insertArrangedSubview(view, at: idx + 1)
-        } else {
-            contentStackView.addArrangedSubview(view)
-        }
-    }
+//    private func insertFacilitiesSection(_ view: UIView) {
+//        // Contoh: taruh setelah locationRow (cari index-nya di stack)
+//        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
+//            contentStackView.insertArrangedSubview(view, at: idx + 1)
+//        } else {
+//            contentStackView.addArrangedSubview(view)
+//        }
+//    }
     
     func setupView() {
         // 1) Tambah scrollView lalu isi dengan stack
@@ -588,7 +548,7 @@ private extension TripDetailView {
         contentStackView.addArrangedSubview(createDashedDivider())
         contentStackView.addArrangedSubview(packageRow)
         contentStackView.addArrangedSubview(priceDetailSection)
-        contentStackView.addArrangedSubview(locationRow)
+        contentStackView.addArrangedSubview(locationSection)
         contentStackView.addArrangedSubview(createLineDivider())
         contentStackView.addArrangedSubview(travelerSection)
         contentStackView.addArrangedSubview(vendorSectionView)

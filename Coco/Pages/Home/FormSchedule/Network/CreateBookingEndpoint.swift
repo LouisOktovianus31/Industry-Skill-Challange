@@ -10,6 +10,7 @@ import Foundation
 enum CreateBookingEndpoint: EndpointProtocol {
     case create
     case getBookings
+    case getBookingDetails
     
     var path: String {
         switch self {
@@ -17,6 +18,13 @@ enum CreateBookingEndpoint: EndpointProtocol {
             return "rpc/create_booking"
         case .getBookings:
             return "rpc/get_user_bookings"
+        case .getBookingDetails:
+            return "rpc/get_booking_details"
         }
     }
+}
+
+struct GetBookingDetailSpec: JSONEncodable {
+    let bookingId: Int
+    enum CodingKeys: String, CodingKey { case bookingId = "booking_id" }
 }

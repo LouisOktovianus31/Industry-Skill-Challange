@@ -59,4 +59,10 @@ extension TripDetailViewController: TripDetailViewModelAction {
         thisView.configureStatusLabelView(with: labelVC.view)
         labelVC.didMove(toParent: self)
     }
+    
+    func openExternalURL(_ url: URL) {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
 }
