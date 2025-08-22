@@ -24,7 +24,8 @@ final class InviteTravelerViewModel: ObservableObject {
         trailingIcon: nil,
         isTypeAble: true,
         onSubmit: {  [weak self] email in
-            self?.onInviteTravelerDidTap(email, data: self!.data)
+            guard let self = self else { return }
+            self.onInviteTravelerDidTap(email, data: self.data)
         },
         delegate: self
     )

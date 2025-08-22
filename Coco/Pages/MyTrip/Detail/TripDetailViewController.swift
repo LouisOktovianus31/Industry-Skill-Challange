@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 final class TripDetailViewController: UIViewController, TripDetailInvitesOutput {
     
@@ -33,8 +34,21 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         super.viewDidLoad()
         title = "Trip Space"
         
-        //        thisView.setInviteAction(target: self, action: #selector(inviteTapped))
+        thisView.onLocationTapped = { [weak self] in
+                self?.viewModel.didTapLocation()
+            }
         viewModel.onViewDidLoad()
+    }
+    
+    private func openInAppleMaps(lat: Double, lon: Double, name: String) {
+        let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let item = MKMapItem(placemark: MKPlacemark(coordinate: coord))
+        item.name = name
+        item.openInMaps(launchOptions: [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coord),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
+                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        ])
     }
     
     @objc private func inviteTapped() {
@@ -42,6 +56,10 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         print("Invite traveler tapped")
         
     }
+    
+//    @objc private func locationButtonTapped() {
+//        viewModel.didTapLocation()
+//    }
     
     private let viewModel: TripDetailViewModelProtocol
     private let thisView: TripDetailView = TripDetailView()

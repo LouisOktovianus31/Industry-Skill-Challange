@@ -22,6 +22,7 @@ struct CreateBookingResponse: JSONDecodable {
 struct BookingDetails: JSONDecodable {
     let status: String
     let bookingId: Int
+    let plannerName: String
     let startTime: String?
     let destinationName: String
     let destinationImage: String
@@ -35,10 +36,12 @@ struct BookingDetails: JSONDecodable {
     let host: HostPackage?
     let user: UserBooking?
     let facilities: [String]?
+    let includedAccessories: [String]
     
     enum CodingKeys: String, CodingKey {
         case status
         case bookingId = "booking_id"
+        case plannerName = "planner_name"
         case startTime = "start_time"
         case destinationName = "destination_name"
         case destinationImage = "destination_image"
@@ -52,6 +55,7 @@ struct BookingDetails: JSONDecodable {
         case host
         case user
         case facilities
+        case includedAccessories = "included_accessories"
     }
 }
 
@@ -87,3 +91,62 @@ struct Traveler: Hashable{
     let id: UUID = .init()
     let name: String
 }
+
+extension BookingDetails {
+    // Bridge dari TripBookingDetails (detail RPC) ke BookingDetails (format lama UI)
+    init(trip: TripBookingDetails) {
+        self.status           = trip.status
+        self.bookingId        = trip.bookingId
+        self.plannerName      = trip.plannerName
+        // Tidak ada di TripBookingDetails → set ke nil
+        self.startTime        = nil
+
+        self.destinationName  = trip.destinationName
+        self.destinationImage = trip.destinationImage ?? ""
+
+        // Decimal → Double
+        self.totalPrice       = (trip.totalPrice as NSDecimalNumber).doubleValue
+
+        // TripBookingDetails punya String non-optional, struct lama optional → ok
+        self.packageName      = trip.packageName
+        self.participants     = trip.participants
+
+        // Date → "yyyy-MM-dd" (menyesuaikan Formatters.apiDateParser)
+        self.activityDate     = Formatters.apiDateParser.string(from: trip.date)
+
+        self.activityTitle    = trip.activityTitle
+
+        // Tidak ada di TripBookingDetails → set ke nil/default
+        self.bookingCreatedAt = nil
+        self.address          = trip.destinationName
+        self.host             = nil
+        self.user             = nil
+
+        // Nama berbeda: includedAccessories → facilities
+        self.facilities       = trip.includedAccessories
+        self.includedAccessories = trip.includedAccessories
+    }
+
+    /// Fallback aman saat data belum ada
+    static let empty = BookingDetails(
+        status: "",
+        bookingId: 0,
+        plannerName: "",
+        startTime: nil,
+        destinationName: "",
+        destinationImage: "",
+        totalPrice: 0,
+        packageName: nil,
+        participants: 0,
+        activityDate: "",
+        activityTitle: "",
+        bookingCreatedAt: nil,
+        address: nil,
+        host: nil,
+        user: nil,
+        facilities: [],
+        includedAccessories: []
+    )
+}
+
+

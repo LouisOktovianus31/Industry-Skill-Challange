@@ -12,19 +12,15 @@ struct BookingDetailDataModel {
     let activityName: String
     let packageName: String
     let location: String
-    
     let bookingDateDisplay: String
     let status: StatusLabel
     let paxNumber: Int
-    
     let priceText: String
     let address: String
-    
     let host: HostDetail?
-    
     let bookedByName: String
-    
     let facilities: [String]
+    let includedAccessories: [String]
     
     struct StatusLabel {
         let text: String
@@ -35,7 +31,7 @@ struct BookingDetailDataModel {
         var bookingStatus: String = bookingDetail.status
         var statusStyle: CocoStatusLabelStyle = .pending
         
-        self.bookedByName = bookingDetail.user?.name ?? "Hany Wijaya"
+        self.bookedByName = bookingDetail.plannerName
         
         //        let formatter: DateFormatter = DateFormatter()
         //        formatter.dateFormat = "YYYY-MM-dd"
@@ -83,14 +79,15 @@ struct BookingDetailDataModel {
         
         // facilities
         self.facilities = TripFacilitiesProvider.shared.facilities(for: bookingDetail)
+        self.includedAccessories = bookingDetail.includedAccessories
     }
 }
 
 extension BookingDetailDataModel {
     init(trip: TripBookingDetails) {
         let style: CocoStatusLabelStyle = trip.date < Calendar.current.startOfDay(for: Date()) ? .success : .refund
+        
         self.status = .init(text: trip.status.capitalized, style: style)
-
         imageString   = trip.destinationImage ?? ""
         activityName  = trip.activityTitle
         packageName   = trip.packageName
@@ -99,10 +96,10 @@ extension BookingDetailDataModel {
         address       = trip.destinationName
         bookingDateDisplay = Formatters.tripDateDisplay.string(from: trip.date)
         priceText = Formatters.idr((trip.totalPrice as NSDecimalNumber).doubleValue)
-
         host = nil
-        bookedByName = "—"
+        bookedByName = trip.plannerName
         facilities = trip.includedAccessories
+        includedAccessories = trip.includedAccessories
     }
 }
 
@@ -110,22 +107,12 @@ final class TripFacilitiesProvider {
     static let shared = TripFacilitiesProvider()
     private init() {}
     
+    func facilities(for trip: TripBookingDetails) -> [String] {
+        return trip.includedAccessories
+    }
+    
     func facilities(for booking: BookingDetails) -> [String] {
-        let name = booking.packageName?.lowercased() ?? ""
-        let title = booking.activityTitle.lowercased()
-        
-        // Contoh aturan dummy
-        if name.contains("snorkel") || title.contains("snorkel") {
-            return ["Snorkeling Gear", "Life Jacket", "Bottled Water", "Certified Guide"]
-        }
-        if name.contains("liveaboard") {
-            return ["Meals", "Cabin", "Dive Guide", "Towels"]
-        }
-        if booking.destinationName.lowercased().contains("bali") {
-            return ["Certified Guide", "Free Meal", "Water Bottle"]
-        }
-        // default
-        return ["Certified Guide", "Water Bottle"]
+        return booking.includedAccessories
     }
 }
 
@@ -138,6 +125,8 @@ final class TripDetailView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let facilitiesSectionView = FacilitiesSectionView(title: "This Trip Includes", items: [])
     
     func configureView(_ data: BookingDetailDataModel) {
         activityImage.loadImage(from: URL(string: data.imageString))
@@ -153,10 +142,11 @@ final class TripDetailView: UIView {
         priceDetailPrice.text = data.priceText
         
         addressLabel.text = data.address
-//        locationTextLabel.text = data.location
         locationSection.configure(text: data.location)
         
         bookedByNameValueLabel.text = data.bookedByName
+        facilitiesSectionView.isHidden = data.includedAccessories.isEmpty
+        facilitiesSectionView.update(items: data.includedAccessories)
         
         if let host = data.host {
             vendorNameValueLabel.text  = host.name
@@ -169,11 +159,6 @@ final class TripDetailView: UIView {
             vendorPhoneValueLabel.text = "+62 8123456789"
             vendorSectionView.isHidden = false
         }
-        
-//        if !data.facilities.isEmpty {
-//            let facilities = FacilitiesSectionView(title: "This Trip Includes", items: data.facilities)
-//            insertFacilitiesSection(facilities)
-//        }
         
     }
     
@@ -227,7 +212,7 @@ final class TripDetailView: UIView {
     
     // Location (Maps)
     private let locationSection = LocationSectionView()
-    
+
     var onLocationTapped: (() -> Void)? {
         get { locationSection.onTap }
         set { locationSection.onTap = newValue }
@@ -317,9 +302,6 @@ final class TripDetailView: UIView {
         l.setContentHuggingPriority(.required, for: .horizontal)
         return l
     }()
-    
-    //    private lazy var packageNameSection: UIView = createSectionTitle(title: "Package Name", view: activityDescriptionTitle)
-    //
     
     private lazy var activityDescriptionTitle: UILabel = {
         let title = UILabel(
@@ -536,20 +518,22 @@ private extension TripDetailView {
         
         let actionSection = ActionSectionView()
         let importantNoticeSection = ImportantNoticeSectionView()
+        let facilitiesView = FacilitiesSectionView(title: "This Trip Includes",
+                                                   items: [])
         
         // URUTAN VSTACK
         contentStackView.addArrangedSubview(activityDetailView)
+        contentStackView.addArrangedSubview(locationSection)
         contentStackView.addArrangedSubview(createLineDivider())
         contentStackView.addArrangedSubview(bookedByNameRow)
         contentStackView.addArrangedSubview(statusRow)
         contentStackView.addArrangedSubview(createDashedDivider())
         contentStackView.addArrangedSubview(packageRow)
         contentStackView.addArrangedSubview(priceDetailSection)
-        contentStackView.addArrangedSubview(locationSection)
+        contentStackView.addArrangedSubview(facilitiesSectionView)
         contentStackView.addArrangedSubview(createLineDivider())
         contentStackView.addArrangedSubview(travelerSection)
         contentStackView.addArrangedSubview(vendorSectionView)
-        contentStackView.addArrangedSubview(actionSection)
         contentStackView.addArrangedSubview(importantNoticeSection)
         //        contentStackView.addArrangedSubview(addressSection)
         

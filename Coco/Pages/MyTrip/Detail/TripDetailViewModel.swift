@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 final class TripDetailViewModel {
     weak var actionDelegate: TripDetailViewModelAction?
@@ -13,6 +14,7 @@ final class TripDetailViewModel {
     
     init(data: TripBookingDetails) {
         self.data = data
+        //        self.dataList = BookingDetails(trip: data)
         
         self.travelers = data.memberEmails.map { email in
             let name = email.components(separatedBy: "@").first?.replacingOccurrences(of: ".", with: " ") ?? "Traveller"
@@ -21,14 +23,7 @@ final class TripDetailViewModel {
     }
     
     private var data: TripBookingDetails?
-    
-    // Dummy Data
-    //    private(set) var travelers: [Traveler] = [
-    //            Traveler(name: "Jose L"),
-    //            Traveler(name: "Lusi O"),
-    //            Traveler(name: "Hany W"),
-    //        ]
-    
+
     private(set) var travelers: [Traveler] = []
     private var fetcher: TripDetailFetcherProtocol?
     private var bookingId: Int?
@@ -42,23 +37,22 @@ final class TripDetailViewModel {
     // private init untuk convenience init di atas
     private init(data: TripBookingDetails?) {
         self.data = data
+        
     }
-    
-    private let data: BookingDetails
-    
-    // Dummy Data
-    private(set) var travelers: [Traveler] = [
-        Traveler(name: "Jose L"),
-        Traveler(name: "Lusi O"),
-        Traveler(name: "Hany W"),
-    ]
+    //    private let dataList: BookingDetails
+    private lazy var dataList: BookingDetails = {
+        guard let data = data else { return .empty }
+        return BookingDetails(trip: data)
+    }()
+
     
     private(set) lazy var inviteTravelerViewModel: InviteTravelerViewModelProtocol = {
-        let viewModel: InviteTravelerViewModel = InviteTravelerViewModel(data: data)
-//        viewModel.delegate = self
+        let viewModel: InviteTravelerViewModel = InviteTravelerViewModel(data: dataList)
+        //        viewModel.delegate = self
         
         return viewModel
     }()
+
 }
 
 //extension TripDetailViewModel: TripDetailViewModelProtocol {
@@ -71,18 +65,18 @@ final class TripDetailViewModel {
 
 extension TripDetailViewModel: TripDetailViewModelProtocol {
     func onViewDidLoad() {
-        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: data))
+        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: dataList))
         actionDelegate?.configureFooter(viewModel: inviteTravelerViewModel)
         
-        if let data {                       // sudah ada data → langsung render
+        if let data {
             actionDelegate?.configureView(dataModel: .init(trip: data))
             invitesOutput?.didUpdateTravelers(travelers)
             return
         }
-
+        
         // kalau dibuat via bookingId → fetch dulu
         guard let fetcher, let bookingId else { return }
-
+        
         Task { [weak self] in
             do {
                 let details = try await fetcher.fetchTripDetail(bookingId: bookingId)
@@ -100,36 +94,33 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
                 print("TripDetail fetch error:", error)
             }
         }
-
-//        invitesOutput?.didUpdateTravelers(travelers) // initial travelers payload
+        
+        //        invitesOutput?.didUpdateTravelers(travelers) // initial travelers payload
     }
 }
 
 // MARK: - Location logic (dipisah dari View)
 extension TripDetailViewModel {
-    func appleMapsURL(latitude: Double, longitude: Double, placeName: String) -> URL? {
-        var comps = URLComponents()
-        comps.scheme = "https"
-        comps.host   = "maps.apple.com"
-        comps.path   = "/"                      // opsional, biar URL valid
-        comps.queryItems = [
-            URLQueryItem(name: "ll", value: "\(latitude),\(longitude)"),
-            URLQueryItem(name: "q",  value: placeName)
-        ]
-        return comps.url
+    private func openInAppleMaps(lat: Double, lon: Double, name: String) {
+        let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let item = MKMapItem(placemark: MKPlacemark(coordinate: coord))
+        item.name = name
+        item.openInMaps(launchOptions: [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coord),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
+                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        ])
     }
-
+    
     func didTapLocation() {
-        let lat  = -0.233
-        let long = 130.507
-        guard let destinationName = data?.destinationName,
-              let url = appleMapsURL(latitude: lat, longitude: long, placeName: destinationName)
-        else { return }
-
-        actionDelegate?.openExternalURL(url)
+        guard let data = data else { return }
+        openInAppleMaps(
+            lat: data.latitude,
+            lon: data.longitude,
+            name: data.destinationName
+        )
     }
 }
-
 
 // MARK: - Actions (dummy for now)
 extension TripDetailViewModel {
