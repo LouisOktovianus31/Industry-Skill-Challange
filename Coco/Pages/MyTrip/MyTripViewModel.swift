@@ -25,6 +25,7 @@ final class MyTripViewModel {
     
     private let fetcher: MyTripBookingListFetcherProtocol
     private var responses: [BookingDetails] = []
+    private var isError: Bool = false
     
     private(set) lazy var collectionViewModel: MyTripListCollectionViewModelProtocol = {
         let viewModel: MyTripListCollectionViewModel = MyTripListCollectionViewModel()
@@ -40,23 +41,33 @@ extension MyTripViewModel: MyTripViewModelProtocol {
         responses = []
         
         Task { @MainActor in
-            let response: [BookingDetails] = try await fetcher.fetchTripBookingList(
-                request: TripBookingListSpec(userId: UserDefaults.standard.value(forKey: "user-id") as? String ?? "")
-            ).values
+            actionDelegate?.setStateViewData(StateViewData(.loading))
             
-            responses = response
-            
-            allTripData = response
-                .map({ listData in
-                    MyTripListCardDataModel(bookingDetail: listData)
-                })
-                .sorted { $0.date < $1.date }
-            
-            applyFilter(currentFilter)
+            do {
+                let response: [BookingDetails] = try await fetcher.fetchTripBookingList(
+                    request: TripBookingListSpec(userId: UserDefaults.standard.value(forKey: "user-id") as? String ?? "")
+                ).values
+                
+                responses = response
+                
+                allTripData = response
+                    .map({ listData in
+                        MyTripListCardDataModel(bookingDetail: listData)
+                    })
+                    .sorted { $0.date < $1.date }
+                
+                isError = false
+                actionDelegate?.setStateViewData(nil)
+                applyFilter(currentFilter)
+            } catch {
+                actionDelegate?.setStateViewData(StateViewData(.error))
+                isError = true
+            }
         }
     }
     
     func applyFilter(_ filter: EventFilter) {
+        if isError { return }
         let today = Date()
         let filteredData: [MyTripListCardDataModel]
         
@@ -70,7 +81,11 @@ extension MyTripViewModel: MyTripViewModelProtocol {
         
         collectionViewModel.updateMyTripListData(filteredData)
         
-        actionDelegate?.showEmptyState(filteredData.isEmpty)
+        if filteredData.isEmpty {
+            actionDelegate?.setStateViewData(StateViewData(.empty))
+        } else {
+            actionDelegate?.setStateViewData(nil)
+        }
     }
     
     func changeFilter(to filter: EventFilter) {

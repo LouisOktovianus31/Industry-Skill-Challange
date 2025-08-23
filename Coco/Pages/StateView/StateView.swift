@@ -1,5 +1,5 @@
 //
-//  EmptyView.swift
+//  StateView.swift
 //  Coco
 //
 //  Created by Arin Juan Sari on 22/08/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class EmptyView: UIView {
+final class StateView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -17,19 +17,29 @@ final class EmptyView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setData(_ data: StateViewData) {
+        iconView.image = data.image
+        labelView.text = data.message
+        loadingView.isHidden = !data.isLoading
+        iconView.isHidden = data.image == nil
+    }
+    
     private lazy var iconView: UIImageView = createIconView()
     private lazy var labelView: UILabel = createLabelView()
+    private lazy var loadingView: UIActivityIndicatorView = UIActivityIndicatorView(style: .large)
 }
 
-private extension EmptyView {
+private extension StateView {
     func setupViews() {
         backgroundColor = Token.additionalColorsWhite
         
         let stackView = UIStackView(arrangedSubviews: [
             iconView,
-            labelView
+            loadingView,
+            labelView,
         ])
         
+        loadingView.startAnimating()
         stackView.axis = .vertical
         stackView.spacing = 12
         stackView.distribution = .fill
@@ -38,7 +48,7 @@ private extension EmptyView {
         addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -50),
             stackView.centerXAnchor.constraint(equalTo: centerXAnchor)
         ])
     }

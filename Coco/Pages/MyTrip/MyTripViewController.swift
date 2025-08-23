@@ -49,8 +49,8 @@ final class MyTripViewController: UIViewController {
 }
 
 extension MyTripViewController: MyTripViewModelAction {
-    func showEmptyState(_ isShow: Bool) {
-        thisView.showEmptyView(isShow: isShow)
+    func setStateViewData(_ stateData: StateViewData?) {
+        thisView.setStateViewData(stateData)
     }
     
     func goToRebookingDetail(with data: BookingDetails) {
