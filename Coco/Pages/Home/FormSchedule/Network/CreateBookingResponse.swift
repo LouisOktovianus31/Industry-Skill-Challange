@@ -26,6 +26,8 @@ struct BookingDetails: JSONDecodable {
     let startTime: String?
     let destinationName: String
     let destinationImage: String
+    let bookedBy: String
+//    let isPlanner: Bool
     let totalPrice: Double?
     let packageName: String?
     let participants: Int?
@@ -45,6 +47,8 @@ struct BookingDetails: JSONDecodable {
         case startTime = "start_time"
         case destinationName = "destination_name"
         case destinationImage = "destination_image"
+        case bookedBy = "planner_name"
+//        case isPlanner = "is_planner"
         case totalPrice = "total_price"
         case packageName = "package_name"
         case participants

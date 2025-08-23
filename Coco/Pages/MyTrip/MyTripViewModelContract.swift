@@ -12,6 +12,7 @@ protocol MyTripViewModelAction: AnyObject {
     func goToBookingDetail(with data: BookingDetails)
     func goToRebookingDetail(with data: BookingDetails)
     func segmentDidChange(to index: Int)
+    func setStateViewData(_ stateData: StateViewData?)
 }
 protocol MyTripViewModelProtocol: AnyObject {
     var actionDelegate: MyTripViewModelAction? { get set }

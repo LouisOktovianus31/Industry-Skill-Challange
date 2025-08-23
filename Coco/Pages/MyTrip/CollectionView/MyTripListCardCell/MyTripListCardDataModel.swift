@@ -8,7 +8,6 @@
 import Foundation
 
 struct MyTripListCardDataModel {
-    //    let statusLabel: StatusLabel
     let id: Int
     let imageUrl: String
     let dateText: String
@@ -23,13 +22,11 @@ struct MyTripListCardDataModel {
     }
     
     init(bookingDetail: BookingDetails) {
-        //        var bookingStatus: String = bookingDetail.status
-        //        var statusStyle: CocoStatusLabelStyle = .pending
         var dateResult: String = ""
         var actualDate: Date = Date()
         
         let inputFormatter: DateFormatter = DateFormatter()
-        inputFormatter.dateFormat = "YYYY-MM-dd"
+        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         inputFormatter.locale = Locale(identifier: "en_US_POSIX")
         
         if let date = inputFormatter.date(from: bookingDetail.activityDate) {
@@ -39,26 +36,17 @@ struct MyTripListCardDataModel {
             
             dateResult = outputFormatter.string(from: date)
             actualDate = date
-            
-            //            if targetDate < today {
-            //                bookingStatus = "Completed"
-            //                statusStyle = .success
-            //            }
-            //            else if targetDate > today {
-            //                bookingStatus = "Upcoming"
-            //                statusStyle = .refund
-            //            }
         } else {
             dateResult = bookingDetail.activityDate
         }
         
-        //        statusLabel = StatusLabel(text: bookingStatus, style: statusStyle)
         id = bookingDetail.bookingId
         imageUrl = bookingDetail.destinationImage
         dateText = dateResult
         date = actualDate
         title = bookingDetail.activityTitle
         location = bookingDetail.destinationName
-        bookedBy = "Booked by Raissa"
+//        bookedBy = "BookedBy: \(bookingDetail.isPlanner ? "You" : bookingDetail.bookedBy)"
+        bookedBy = "BookedBy: You"
     }
 }

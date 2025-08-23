@@ -88,8 +88,6 @@ final class MyTripListCardView: UICollectionViewCell {
         footerView.addArrangedSubview(detailButtonContainer.view)
         
         if dataModel.date >= today {
-            footerView.addArrangedSubview(buttonDownloadView)
-        } else {
             footerView.addArrangedSubview(rebookButtonContainer.view)
         }
     }
@@ -100,8 +98,6 @@ final class MyTripListCardView: UICollectionViewCell {
     private lazy var leftSideView: UIStackView = createLeftSideView()
     private lazy var headerView: UIView = createHeaderView()
     private lazy var footerView: UIStackView = createFooterView()
-    private lazy var buttonDetailView: UIView = createButtonDetailView()
-    private lazy var buttonDownloadView: UIView = createButtonDownloadView()
     
     private lazy var dateLabel: UILabel = MyTripLabelFactory.make(.date)
     private lazy var tripLabel: UILabel = MyTripLabelFactory.make(.trip)
@@ -126,16 +122,6 @@ final class MyTripListCardView: UICollectionViewCell {
         style: .normal,
         type: .secondary,
         isStretch: true
-    )
-    private lazy var downloadButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
-        action: { [weak self] in
-            guard let self else { return }
-            delegate?.notifyTripListCardDidTap(at: bookingId)
-        },
-        image: Image("DownloadIcon"),
-        style: .circle,
-        type: .primary,
-        isStretch: false
     )
     private var bookingId: Int = 0
 }
@@ -235,32 +221,6 @@ private extension MyTripListCardView {
         }
         
         return headerView
-    }
-    
-    func createButtonDetailView() -> UIView {
-        let buttonDetailView: UIView = UIView()
-        buttonDetailView.addSubviews([
-            detailButtonContainer.view
-        ])
-        detailButtonContainer.view.layout {
-            $0.leading(to: buttonDetailView.leadingAnchor)
-            $0.trailing(to: buttonDetailView.trailingAnchor)
-        }
-        
-        return buttonDetailView
-    }
-    
-    func createButtonDownloadView() -> UIView {
-        let buttonDownloadView: UIView = UIView()
-        buttonDownloadView.addSubviews([
-            downloadButtonContainer.view
-        ])
-        downloadButtonContainer.view.layout {
-            $0.trailing(to: buttonDownloadView.trailingAnchor)
-            $0.leading(to: buttonDownloadView.leadingAnchor)
-        }
-        
-        return buttonDownloadView
     }
     
     func createFooterView() -> UIStackView {

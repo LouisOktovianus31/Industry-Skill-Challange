@@ -8,9 +8,6 @@
 import Foundation
 import UIKit
 
-import Foundation
-import UIKit
-
 final class MyTripViewController: UIViewController {
     init(viewModel: MyTripViewModelProtocol) {
         self.viewModel = viewModel
@@ -51,6 +48,10 @@ final class MyTripViewController: UIViewController {
 }
 
 extension MyTripViewController: MyTripViewModelAction {
+    func setStateViewData(_ stateData: StateViewData?) {
+        thisView.setStateViewData(stateData)
+    }
+    
     func goToRebookingDetail(with data: BookingDetails) {
         guard let navigationController else { return }
         let coordinator: MyTripCoordinator = MyTripCoordinator(
