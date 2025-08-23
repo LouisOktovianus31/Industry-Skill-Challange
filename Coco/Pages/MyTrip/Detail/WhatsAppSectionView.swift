@@ -24,7 +24,7 @@ final class WhatsAppSectionView: UIView {
     
     // MARK: UI
     private let imageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "whatsapp"))
+        let imageView = UIImageView(image: CocoIcon.whatsappIcon.image)
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.required, for: .horizontal)
         imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -33,7 +33,7 @@ final class WhatsAppSectionView: UIView {
     
     private let textLabel: UILabel = {
         let textLabel = UILabel(
-            font: .jakartaSans(forTextStyle: .body, weight: .regular),
+            font: .jakartaSans(forTextStyle: .subheadline, weight: .regular),
             textColor: Token.additionalColorsBlack,
             numberOfLines: 1
         )
@@ -52,7 +52,7 @@ private extension WhatsAppSectionView {
         layer.borderWidth = 1
         layer.borderColor = Token.additionalColorsLine.cgColor
         backgroundColor = Token.additionalColorsWhite
-        layout { $0.height(52) }
+        layout { $0.height(45) }
         
         addSubviews([imageView, textLabel])
         

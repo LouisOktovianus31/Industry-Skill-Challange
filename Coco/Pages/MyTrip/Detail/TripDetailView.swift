@@ -208,6 +208,22 @@ final class TripDetailView: UIView {
         numberOfLines: 2
     )
     
+    private let iconCalendarView: UIImageView = {
+        let iconview = UIImageView(image: CocoIcon.icCalendarIcon.image)
+        iconview.contentMode = .scaleAspectFit
+        iconview.setContentHuggingPriority(.required, for: .horizontal)
+        iconview.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return iconview
+    }()
+    
+    private let iconUserView: UIImageView = {
+        let iconview = UIImageView(image: CocoIcon.icuserIcon.image)
+        iconview.contentMode = .scaleAspectFit
+        iconview.setContentHuggingPriority(.required, for: .horizontal)
+        iconview.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return iconview
+    }()
+    
     private lazy var activityDateLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .callout, weight: .medium),
         textColor: Token.grayscale90,
@@ -564,6 +580,8 @@ private extension TripDetailView {
         containerView.addSubviews([
             activityImage,
             activityTitle,
+            iconCalendarView,
+            iconUserView,
             activityDateLabel,
             paxNumberLabel
         ])
@@ -578,13 +596,24 @@ private extension TripDetailView {
                 .top(to: containerView.topAnchor)
                 .trailing(to: containerView.trailingAnchor)
         }
-        activityDateLabel.layout {
+        
+        iconCalendarView.layout {
             $0.leading(to: activityTitle.leadingAnchor)
+                .top(to: activityTitle.bottomAnchor, constant: 4.0)
+        }
+        activityDateLabel.layout {
+            $0.leading(to: iconCalendarView.leadingAnchor, constant: 25.0)
                 .top(to: activityTitle.bottomAnchor, constant: 4.0)
                 .trailing(to: containerView.trailingAnchor)
         }
+        
+        iconUserView.layout {
+            $0.leading(to: activityTitle.leadingAnchor)
+                .top(to: activityTitle.bottomAnchor, constant: 25.0)
+                .bottom(to: containerView.bottomAnchor)
+        }
         paxNumberLabel.layout {
-            $0.leading(to: activityDateLabel.leadingAnchor)
+            $0.leading(to: iconUserView.leadingAnchor, constant: 25)
                 .top(to: activityDateLabel.bottomAnchor, constant: 4.0)
                 .trailing(to: containerView.trailingAnchor)
                 .bottom(to: containerView.bottomAnchor)

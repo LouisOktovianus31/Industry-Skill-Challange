@@ -30,7 +30,7 @@ final class LocationSectionView: UIView {
 
     private let locationTextLabel: UILabel = {
         let label = UILabel(
-            font: .jakartaSans(forTextStyle: .body, weight: .regular),
+            font: .jakartaSans(forTextStyle: .subheadline, weight: .regular),
             textColor: Token.grayscale90,
             numberOfLines: 1
         )
@@ -64,7 +64,7 @@ private extension LocationSectionView {
         layer.borderWidth = 1
         layer.borderColor = Token.additionalColorsLine.cgColor
         backgroundColor = Token.additionalColorsWhite
-        layout { $0.height(52) }
+        layout { $0.height(45) }
 
         addSubviews([iconView, locationTextLabel, chevronView])
 
