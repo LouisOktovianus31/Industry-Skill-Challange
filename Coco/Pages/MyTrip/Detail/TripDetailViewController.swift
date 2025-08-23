@@ -37,6 +37,10 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         thisView.onLocationTapped = { [weak self] in
                 self?.viewModel.didTapLocation()
             }
+        thisView.onWhatsAppTapped = { [weak self] in
+                    // Ganti dengan link group WA asli dari backend kalau ada
+                    self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
+                }
         viewModel.onViewDidLoad()
     }
     
@@ -49,6 +53,11 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
             MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
                 MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
         ])
+    }
+    
+    private func open(urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        UIApplication.shared.open(url)
     }
     
     @objc private func inviteTapped() {

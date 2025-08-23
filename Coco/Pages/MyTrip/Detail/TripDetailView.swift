@@ -8,6 +8,7 @@ struct HostDetail {
 }
 
 struct BookingDetailDataModel {
+    let bookingId: Int
     let imageString: String
     let activityName: String
     let packageName: String
@@ -52,6 +53,7 @@ struct BookingDetailDataModel {
         }
         
         status = StatusLabel(text: bookingStatus, style: statusStyle)
+        bookingId = bookingDetail.bookingId
         imageString = bookingDetail.destinationImage
         activityName = bookingDetail.activityTitle
         packageName = bookingDetail.packageName ?? ""
@@ -88,6 +90,7 @@ extension BookingDetailDataModel {
         let style: CocoStatusLabelStyle = trip.date < Calendar.current.startOfDay(for: Date()) ? .success : .refund
         
         self.status = .init(text: trip.status.capitalized, style: style)
+        bookingId     = trip.bookingId
         imageString   = trip.destinationImage ?? ""
         activityName  = trip.activityTitle
         packageName   = trip.packageName
@@ -128,6 +131,8 @@ final class TripDetailView: UIView {
     
     private let facilitiesSectionView = FacilitiesSectionView(title: "This Trip Includes", items: [])
     
+    private let qrSection = QRCodeSection()
+    
     func configureView(_ data: BookingDetailDataModel) {
         activityImage.loadImage(from: URL(string: data.imageString))
         activityTitle.text = data.activityName
@@ -147,6 +152,11 @@ final class TripDetailView: UIView {
         bookedByNameValueLabel.text = data.bookedByName
         facilitiesSectionView.isHidden = data.includedAccessories.isEmpty
         facilitiesSectionView.update(items: data.includedAccessories)
+        
+        whatsAppSection.configure(title: "Join the Trip WhatsApp Community")
+        
+        let payload = "booking:\(data.bookingId)"
+        qrSection.configure(title: "View QR Code", payload: payload)
         
         if let host = data.host {
             vendorNameValueLabel.text  = host.name
@@ -212,13 +222,20 @@ final class TripDetailView: UIView {
     
     // Location (Maps)
     private let locationSection = LocationSectionView()
-
+    
     var onLocationTapped: (() -> Void)? {
         get { locationSection.onTap }
         set { locationSection.onTap = newValue }
     }
-
     
+    // WhatsApp
+    private let whatsAppSection = WhatsAppSectionView()
+    
+    var onWhatsAppTapped: (() -> Void)? {
+        get { whatsAppSection.onTap }
+        set { whatsAppSection.onTap = newValue }
+    }
+
     private lazy var bookingDateSection: UIView = createSectionTitle(title: "Date Booking", view: bookingDateLabel)
     private lazy var bookingDateLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .body, weight: .bold),
@@ -443,7 +460,7 @@ final class TripDetailView: UIView {
     func renderTravelers(_ travelers: [Traveler]) {
         travelerSection.renderTravelers(travelers)
     }
-    
+
 }
 
 private extension TripDetailView {
@@ -530,10 +547,12 @@ private extension TripDetailView {
         contentStackView.addArrangedSubview(createDashedDivider())
         contentStackView.addArrangedSubview(packageRow)
         contentStackView.addArrangedSubview(priceDetailSection)
+        contentStackView.addArrangedSubview(qrSection)
         contentStackView.addArrangedSubview(facilitiesSectionView)
         contentStackView.addArrangedSubview(createLineDivider())
         contentStackView.addArrangedSubview(travelerSection)
         contentStackView.addArrangedSubview(vendorSectionView)
+        contentStackView.addArrangedSubview(whatsAppSection)
         contentStackView.addArrangedSubview(importantNoticeSection)
         //        contentStackView.addArrangedSubview(addressSection)
         
