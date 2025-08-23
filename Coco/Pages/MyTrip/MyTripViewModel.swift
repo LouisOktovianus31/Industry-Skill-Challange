@@ -62,13 +62,15 @@ extension MyTripViewModel: MyTripViewModelProtocol {
         
         switch filter {
         case .upcoming:
-            filteredData = allTripData.filter { $0.date >= Calendar.current.startOfDay(for: today) }
+            filteredData = allTripData.filter { $0.date < Calendar.current.startOfDay(for: today) }
             
         case .history:
-            filteredData = allTripData.filter { $0.date < Calendar.current.startOfDay(for: today) }
+            filteredData = allTripData.filter { $0.date >= Calendar.current.startOfDay(for: today) }
         }
         
         collectionViewModel.updateMyTripListData(filteredData)
+        
+        actionDelegate?.showEmptyState(filteredData.isEmpty)
     }
     
     func changeFilter(to filter: EventFilter) {

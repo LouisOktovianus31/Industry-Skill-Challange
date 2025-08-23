@@ -50,8 +50,12 @@ extension MyTripListCollectionViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyTripListCardView", for: indexPath) as? MyTripListCardView else {
             return UICollectionViewCell()
         }
-        cell.configureView(dataModel: viewModel.myTripListData[indexPath.row], index: indexPath.row)
-        cell.delegate = self
+        
+        if indexPath.row < viewModel.myTripListData.count {
+            cell.configureView(dataModel: viewModel.myTripListData[indexPath.row], index: indexPath.row)
+            cell.delegate = self
+        }
+        
         return cell
     }
 }

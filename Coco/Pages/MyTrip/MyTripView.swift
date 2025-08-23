@@ -34,6 +34,11 @@ final class MyTripView: UIView {
         segmentControl.setSelectedSegmentUnderline()
     }
     
+    func showEmptyView(isShow: Bool) {
+        emptyView.isHidden = !isShow
+    }
+    
+    private lazy var emptyView: EmptyView = EmptyView()
     private lazy var segmentControl: UISegmentedControl = createSegmentControl()
     private lazy var myTripListView: UIView = UIView()
     
@@ -43,10 +48,12 @@ final class MyTripView: UIView {
 private extension MyTripView {
     func setupView() {
         backgroundColor = Token.additionalColorsWhite
+        emptyView.isHidden = true
         
         let stackView: UIStackView = UIStackView(arrangedSubviews: [
             segmentControl,
-            myTripListView
+            myTripListView,
+            emptyView
         ])
         stackView.axis = .vertical
         stackView.spacing = 16.0
