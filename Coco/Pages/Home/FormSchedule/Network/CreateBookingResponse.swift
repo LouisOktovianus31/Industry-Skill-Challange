@@ -26,7 +26,7 @@ struct BookingDetails: JSONDecodable {
     let startTime: String?
     let destinationName: String
     let destinationImage: String
-    let bookedBy: String
+//    let bookedBy: String
 //    let isPlanner: Bool
     let totalPrice: Double?
     let packageName: String?
@@ -38,7 +38,7 @@ struct BookingDetails: JSONDecodable {
     let host: HostPackage?
     let user: UserBooking?
     let facilities: [String]?
-    let includedAccessories: [String]
+    let includedAccessories: [String] = []
     
     enum CodingKeys: String, CodingKey {
         case status
@@ -47,7 +47,7 @@ struct BookingDetails: JSONDecodable {
         case startTime = "start_time"
         case destinationName = "destination_name"
         case destinationImage = "destination_image"
-        case bookedBy = "planner_name"
+//        case bookedBy = "planner_name"
 //        case isPlanner = "is_planner"
         case totalPrice = "total_price"
         case packageName = "package_name"
@@ -128,7 +128,8 @@ extension BookingDetails {
 
         // Nama berbeda: includedAccessories → facilities
         self.facilities       = trip.includedAccessories
-        self.includedAccessories = trip.includedAccessories
+//        self.includedAccessories = trip.includedAccessories
+        
     }
 
     /// Fallback aman saat data belum ada
@@ -139,6 +140,7 @@ extension BookingDetails {
         startTime: nil,
         destinationName: "",
         destinationImage: "",
+//        bookedBy: "",
         totalPrice: 0,
         packageName: nil,
         participants: 0,
@@ -148,9 +150,6 @@ extension BookingDetails {
         address: nil,
         host: nil,
         user: nil,
-        facilities: [],
-        includedAccessories: []
+        facilities: []
     )
 }
-
-
