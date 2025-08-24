@@ -87,7 +87,7 @@ final class MyTripListCardView: UICollectionViewCell {
         
         footerView.addArrangedSubview(detailButtonContainer.view)
         
-        if dataModel.date >= today {
+        if dataModel.date < today {
             footerView.addArrangedSubview(rebookButtonContainer.view)
         }
     }
@@ -175,7 +175,7 @@ private extension MyTripListCardView {
         let locationIconImageView: UIImageView = UIImageView(image: CocoIcon.icPinPointBlue.getImageWithTintColor(Token.additionalColorsBlack))
         locationIconImageView.contentMode = .scaleAspectFill
         locationIconImageView.layout {
-            $0.size(12)
+            $0.size(16)
         }
         let locationView: UIStackView = UIStackView(arrangedSubviews: [
             locationIconImageView,

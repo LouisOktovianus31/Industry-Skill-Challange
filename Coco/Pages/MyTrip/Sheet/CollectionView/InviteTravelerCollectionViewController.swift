@@ -41,7 +41,6 @@ class InviteTravelerCollectionViewController: UIViewController {
 extension InviteTravelerCollectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let count = viewModel.emailTravelerListData.count
-        print("count \(count)")
         return count
     }
     

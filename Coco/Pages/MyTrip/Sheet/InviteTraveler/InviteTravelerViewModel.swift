@@ -11,6 +11,12 @@ final class InviteTravelerViewModel: ObservableObject {
     weak var delegate: InviteTravelerViewModelDelegate?
     weak var action: InviteTravelerViewModelAction?
     
+    private let fetcher: InviteTravelerFetcherProtocol?
+    
+    init(fetcher: InviteTravelerFetcherProtocol? = InviteTravelerFetcher()) {
+        self.fetcher = fetcher
+    }
+    
     private var data: TripBookingDetails? = nil
     
     private lazy var emailInputViewModel: HomeSearchBarViewModel = HomeSearchBarViewModel(
@@ -36,6 +42,7 @@ final class InviteTravelerViewModel: ObservableObject {
 
 private extension InviteTravelerViewModel {
     func setCollectionViewModelData() {
+        collectionViewModel.resetData()
         data?.memberEmails.forEach({ email in
             collectionViewModel.onAddEmailTraveler(email)
         })
@@ -43,6 +50,26 @@ private extension InviteTravelerViewModel {
 }
 
 extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
+    func sendInviteTravelerRequest() {
+        Task { @MainActor in
+            do {
+                
+                let bookingId = data?.bookingId ?? 0
+                let emails = collectionViewModel.emailTravelerListData.map { $0.email }
+                
+                let _: [CreateBookingByEmailsResponse]? = try await fetcher?.fetchCreateBookingByEmails(
+                    bookingId: bookingId,
+                    emails: emails
+                ).values
+                
+                delegate?.notifyInviteTravellerComplete()
+            } catch {
+                
+            }
+        }
+
+    }
+    
     func setData(_ data: TripBookingDetails?) {
         self.data = data
         setCollectionViewModelData()

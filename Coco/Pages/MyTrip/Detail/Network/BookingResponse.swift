@@ -126,7 +126,7 @@ struct TripBookingDetails: JSONDecodable {
             if let s = try? c.decode(String.self, forKey: key),
                let v = Double(s) { return v }
             if let v = try? c.decode(Double.self, forKey: key) { return v }
-            throw DecodingError.dataCorruptedError(forKey: key, in: c, debugDescription: "Invalid coordinate")
+            return 0
         }
         longitude = try decodeCoord(.longitude)
         latitude  = try decodeCoord(.latitude)

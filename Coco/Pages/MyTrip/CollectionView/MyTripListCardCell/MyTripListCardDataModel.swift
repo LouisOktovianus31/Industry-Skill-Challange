@@ -46,7 +46,6 @@ struct MyTripListCardDataModel {
         date = actualDate
         title = bookingDetail.activityTitle
         location = bookingDetail.destinationName
-//        bookedBy = "BookedBy: \(bookingDetail.isPlanner ? "You" : bookingDetail.bookedBy)"
-        bookedBy = "BookedBy: You"
+        bookedBy = "BookedBy: \(bookingDetail.isPlanner ? "You" : bookingDetail.plannerName)"
     }
 }

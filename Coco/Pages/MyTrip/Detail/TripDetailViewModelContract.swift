@@ -11,6 +11,8 @@ protocol TripDetailViewModelAction: AnyObject {
     func configureView(dataModel: BookingDetailDataModel)
     func openExternalURL(_ url: URL)
     func configureFooter(viewModel: InviteTravelerViewModelProtocol)
+    func closeInviteTravelerView()
+    func onAddCalendarDidTap()
 }
 
 protocol TripDetailViewModelProtocol: AnyObject {
@@ -21,7 +23,9 @@ protocol TripDetailViewModelProtocol: AnyObject {
     func removeTraveler(id: UUID)
     func didTapLocation()
     func onViewDidLoad()
-    
+    func isShowFooterView() -> Bool
+    func addEventCalendar()
+    func updateInviteTravelerViewModel()
 }
 
 protocol TripDetailInvitesOutput: AnyObject {

@@ -13,4 +13,5 @@ protocol InviteTravellerCollectionViewModelProtocol: AnyObject {
     
     func onRemoveEmailTraveler(at index: Int)
     func onAddEmailTraveler(_ email: String)
+    func resetData()
 }

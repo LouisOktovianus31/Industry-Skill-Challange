@@ -182,6 +182,10 @@ final class TripDetailView: UIView {
         }
     }
     
+    func configureFooterView(_ isShow: Bool) {
+        footer.isHidden = !isShow
+    }
+    
     func configureFooterViewAction(action: @escaping () -> Void) {
         self.footerAction = action
         footer.button.addTarget(self, action: #selector(handleFooterTap), for: .touchUpInside)
@@ -498,6 +502,7 @@ private extension TripDetailView {
         // 1) Tambah scrollView lalu isi dengan stack
         addSubview(scrollView)
         addSubview(footer)
+        footer.isHidden = true
         scrollView.addSubview(contentStackView)
         
         // 2) Pin scrollView ke tepi view

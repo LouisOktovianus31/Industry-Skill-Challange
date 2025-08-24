@@ -17,6 +17,10 @@ final class InviteTravelerCollectionViewModel {
 }
 
 extension InviteTravelerCollectionViewModel: InviteTravellerCollectionViewModelProtocol {
+    func resetData() {
+        emailTravelerListData.removeAll()
+    }
+    
     func onAddEmailTraveler(_ email: String) {
         emailTravelerListData.append(Traveler(name: nil, email: email))
     }

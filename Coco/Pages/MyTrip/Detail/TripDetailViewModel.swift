@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import EventKit
 import MapKit
 
 final class TripDetailViewModel {
@@ -23,7 +24,7 @@ final class TripDetailViewModel {
     }
     
     private var data: TripBookingDetails?
-
+    
     private(set) var travelers: [Traveler] = []
     private var fetcher: TripDetailFetcherProtocol?
     private var bookingId: Int?
@@ -44,37 +45,25 @@ final class TripDetailViewModel {
         guard let data = data else { return .empty }
         return BookingDetails(trip: data)
     }()
-
+    
     
     private(set) lazy var inviteTravelerViewModel: InviteTravelerViewModelProtocol = {
         let viewModel: InviteTravelerViewModel = InviteTravelerViewModel()
-        //        viewModel.delegate = self
+        viewModel.delegate = self
         
         return viewModel
     }()
-
 }
 
-//extension TripDetailViewModel: TripDetailViewModelProtocol {
-//    func onViewDidLoad() {
-//        //        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: data))
-//        actionDelegate?.configureView(dataModel: BookingDetailDataModel(trip: data))
-//        invitesOutput?.didUpdateTravelers(travelers) // initial travelers payload
-//    }
-//}
+extension TripDetailViewModel: InviteTravelerViewModelDelegate {
+    func notifyInviteTravellerComplete() {
+        actionDelegate?.closeInviteTravelerView()
+        fetchData()
+    }
+}
 
-extension TripDetailViewModel: TripDetailViewModelProtocol {
-    func onViewDidLoad() {
-        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: dataList))
-        actionDelegate?.configureFooter(viewModel: inviteTravelerViewModel)
-        
-        if let data {
-            actionDelegate?.configureView(dataModel: .init(trip: data))
-            invitesOutput?.didUpdateTravelers(travelers)
-            return
-        }
-        
-        // kalau dibuat via bookingId → fetch dulu
+private extension TripDetailViewModel {
+    func fetchData() {
         guard let fetcher, let bookingId else { return }
         
         Task { [weak self] in
@@ -86,7 +75,9 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
                         let name = $0.components(separatedBy: "@").first?.replacingOccurrences(of: ".", with: " ") ?? "Traveler"
                         return Traveler(name: name, email: $0)
                     }
-                    self?.inviteTravelerViewModel.setData(details)
+                    updateInviteTravelerViewModel()
+                    
+                    self?.actionDelegate?.configureFooter(viewModel: inviteTravelerViewModel)
                     self?.actionDelegate?.configureView(dataModel: .init(trip: details))
                     self?.invitesOutput?.didUpdateTravelers(self?.travelers ?? [])
                 }
@@ -95,8 +86,61 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
                 print("TripDetail fetch error:", error)
             }
         }
+    }
+}
+
+extension TripDetailViewModel: TripDetailViewModelProtocol {
+    func updateInviteTravelerViewModel() {
+        self.inviteTravelerViewModel.setData(self.data)
+    }
+    
+    func addEventCalendar() {
+        let eventStore = EKEventStore()
         
-        //        invitesOutput?.didUpdateTravelers(travelers) // initial travelers payload
+        eventStore.requestAccess(to: .event) { granted, error in
+            guard granted, error == nil else {
+                print("Access denied: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            let event = EKEvent(eventStore: eventStore)
+            event.title = self.data?.activityTitle ?? "Coco Activity"
+            event.startDate = self.data?.date
+            event.endDate = event.startDate.addingTimeInterval(3600*24)
+            event.calendar = eventStore.defaultCalendarForNewEvents
+            
+            do {
+                try eventStore.save(event, span: .thisEvent, commit: true)
+                print("Event saved with attendees.")
+            } catch {
+                print("Failed to save event: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func onViewDidLoad() {
+        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: dataList))
+        
+        if let data {
+            actionDelegate?.configureView(dataModel: .init(trip: data))
+            invitesOutput?.didUpdateTravelers(travelers)
+            return
+        }
+        
+        fetchData()
+    }
+    
+    func isShowFooterView() -> Bool {
+        guard let data else { return false }
+        
+        let today = Date()
+        
+        let isParticipantsMoreThanOne = data.participants > 1
+        print("data.date:\(data.date)")
+        let isPlanner = true // todo update if BE complete
+        let isUpcoming = data.date >= today
+        
+        return isParticipantsMoreThanOne && isPlanner && isUpcoming
     }
 }
 
@@ -109,7 +153,7 @@ extension TripDetailViewModel {
         item.openInMaps(launchOptions: [
             MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coord),
             MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
-                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                                                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
         ])
     }
     
