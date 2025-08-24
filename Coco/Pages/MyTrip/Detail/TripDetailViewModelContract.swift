@@ -9,6 +9,7 @@ import Foundation
 
 protocol TripDetailViewModelAction: AnyObject {
     func configureView(dataModel: BookingDetailDataModel)
+    func openExternalURL(_ url: URL)
     func configureFooter(viewModel: InviteTravelerViewModelProtocol)
 }
 
@@ -18,8 +19,9 @@ protocol TripDetailViewModelProtocol: AnyObject {
     var invitesOutput: TripDetailInvitesOutput? { get set }
     func addTravelerDummy(name: String)
     func removeTraveler(id: UUID)
-    
+    func didTapLocation()
     func onViewDidLoad()
+    
 }
 
 protocol TripDetailInvitesOutput: AnyObject {

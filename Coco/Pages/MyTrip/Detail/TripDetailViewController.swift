@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 final class TripDetailViewController: UIViewController, TripDetailInvitesOutput {
     
@@ -33,8 +34,30 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         super.viewDidLoad()
         title = "Trip Space"
         
-        //        thisView.setInviteAction(target: self, action: #selector(inviteTapped))
+        thisView.onLocationTapped = { [weak self] in
+                self?.viewModel.didTapLocation()
+            }
+        thisView.onWhatsAppTapped = { [weak self] in
+                    // Ganti dengan link group WA asli dari backend kalau ada
+                    self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
+                }
         viewModel.onViewDidLoad()
+    }
+    
+    private func openInAppleMaps(lat: Double, lon: Double, name: String) {
+        let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let item = MKMapItem(placemark: MKPlacemark(coordinate: coord))
+        item.name = name
+        item.openInMaps(launchOptions: [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coord),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
+                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        ])
+    }
+    
+    private func open(urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        UIApplication.shared.open(url)
     }
     
     @objc private func inviteTapped() {
@@ -42,6 +65,10 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         print("Invite traveler tapped")
         
     }
+    
+//    @objc private func locationButtonTapped() {
+//        viewModel.didTapLocation()
+//    }
     
     private let viewModel: TripDetailViewModelProtocol
     private let thisView: TripDetailView = TripDetailView()
@@ -66,6 +93,13 @@ extension TripDetailViewController: TripDetailViewModelAction {
         labelVC.didMove(toParent: self)
     }
     
+
+    func openExternalURL(_ url: URL) {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+
     private func addTripMemberTapped(viewModel: InviteTravelerViewModelProtocol) {
         let inviteTravellerViewController = InviteTravelerViewController(viewModel: viewModel)
         inviteTravellerViewController.title = "Invite Traveler"
@@ -79,4 +113,5 @@ extension TripDetailViewController: TripDetailViewModelAction {
         
         present(nav, animated: true, completion: nil)
     }
+
 }

@@ -8,24 +8,49 @@
 import UIKit
 
 final class FacilitiesSectionView: UIView {
+
+    // simpan referensi komponen agar bisa di-update
+    private let titleLabel: UILabel = UILabel(
+        font: .jakartaSans(forTextStyle: .headline, weight: .bold),
+        textColor: Token.additionalColorsBlack,
+        numberOfLines: 1
+    )
+
+    private let vstack: UIStackView = {
+        let s = UIStackView()
+        s.axis = .vertical
+        s.spacing = 12
+        return s
+    }()
+
     init(title: String, items: [String]) {
         super.init(frame: .zero)
-        build(title: title, items: items)
+        setupLayout()
+        update(title: title, items: items)
     }
     required init?(coder: NSCoder) { fatalError() }
 
-    private func build(title: String, items: [String]) {
-        let titleLabel = UILabel(
-            font: .jakartaSans(forTextStyle: .headline, weight: .bold),
-            textColor: Token.additionalColorsBlack,
-            numberOfLines: 1
-        )
-        titleLabel.text = title
+    private func setupLayout() {
+        addSubviews([titleLabel, vstack])
+        titleLabel.layout {
+            $0.leading(to: leadingAnchor).top(to: topAnchor).trailing(to: trailingAnchor)
+        }
+        vstack.layout {
+            $0.leading(to: leadingAnchor)
+                .top(to: titleLabel.bottomAnchor, constant: 12)
+                .trailing(to: trailingAnchor)
+                .bottom(to: bottomAnchor)
+        }
+    }
 
-        let vstack = UIStackView()
-        vstack.axis = .vertical
-        vstack.spacing = 12
+    /// Panggil ini setiap kali ada data baru
+    func update(title: String? = nil, items: [String]) {
+        if let title { titleLabel.text = title }
 
+        // bersihkan isi sebelumnya
+        vstack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        // isi ulang per 2 kolom
         var i = 0
         while i < items.count {
             let h = UIStackView()
@@ -41,15 +66,6 @@ final class FacilitiesSectionView: UIView {
             }
             vstack.addArrangedSubview(h)
             i += 2
-        }
-
-        addSubviews([titleLabel, vstack])
-        titleLabel.layout {
-            $0.leading(to: leadingAnchor).top(to: topAnchor).trailing(to: trailingAnchor)
-        }
-        vstack.layout {
-            $0.leading(to: leadingAnchor).top(to: titleLabel.bottomAnchor, constant: 12)
-                .trailing(to: trailingAnchor).bottom(to: bottomAnchor)
         }
     }
 
@@ -78,3 +94,4 @@ final class FacilitiesSectionView: UIView {
         return row
     }
 }
+

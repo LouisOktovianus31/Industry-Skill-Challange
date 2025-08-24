@@ -77,7 +77,7 @@ final class TravelerSectionView: UIView {
         var currentWidth: CGFloat = 0
         rows.addArrangedSubview(currentRow)
         
-        let chips: [UIView] = cachedTravelers.map { travelerChip($0) } + [addChip()]
+        let chips: [UIView] = cachedTravelers.map { travelerChip($0) }
         
         for chip in chips {
             chip.setNeedsLayout(); chip.layoutIfNeeded()
@@ -110,6 +110,8 @@ final class TravelerSectionView: UIView {
         container.layer.borderColor = Token.additionalColorsLine.cgColor
         container.layer.cornerRadius = 18
         
+        container.layoutMargins = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        
         let name = UILabel(
             font: .jakartaSans(forTextStyle: .subheadline, weight: .regular),
             textColor: Token.additionalColorsBlack,
@@ -117,23 +119,30 @@ final class TravelerSectionView: UIView {
         )
         name.text = t.name
         
-        let close = UIButton(type: .system)
-        close.setImage(UIImage(systemName: "xmark"), for: .normal)
-        close.tintColor = Token.grayscale60
-        close.contentEdgeInsets = .init(top: 4, left: 4, bottom: 4, right: 4)
-        close.addAction(UIAction { [weak self] _ in self?.onRemoveTapped?(t.id) }, for: .touchUpInside)
+        //        let close = UIButton(type: .system)
+        //        close.setImage(UIImage(systemName: "xmark"), for: .normal)
+        //        close.tintColor = Token.grayscale60
+        //        close.contentEdgeInsets = .init(top: 4, left: 4, bottom: 4, right: 4)
+        //        close.addAction(UIAction { [weak self] _ in self?.onRemoveTapped?(t.id) }, for: .touchUpInside)
         
-        container.addSubviews([name, close])
-        name.layout {
-            $0.leading(to: container.leadingAnchor, constant: 12)
-                .top(to: container.topAnchor, constant: 6)
-                .bottom(to: container.bottomAnchor, constant: -6)
-        }
-        close.layout {
-            $0.leading(to: name.trailingAnchor, constant: 8)
-                .trailing(to: container.trailingAnchor, constant: -12)
-                .centerY(to: name.centerYAnchor)
-        }
+        container.addSubview(name)
+        name.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            name.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
+            name.topAnchor.constraint(equalTo: container.layoutMarginsGuide.topAnchor),
+            name.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor), // ← important
+            name.bottomAnchor.constraint(equalTo: container.layoutMarginsGuide.bottomAnchor)
+        ])
+        //        name.layout {
+        //            $0.leading(to: container.leadingAnchor, constant: 12)
+        //                .top(to: container.topAnchor, constant: 6)
+        //                .bottom(to: container.bottomAnchor, constant: -6)
+        //        }
+        //        close.layout {
+        //            $0.leading(to: name.trailingAnchor, constant: 8)
+        //                .trailing(to: container.trailingAnchor, constant: -12)
+        //                .centerY(to: name.centerYAnchor)
+        //        }
         container.heightAnchor.constraint(greaterThanOrEqualToConstant: 36).isActive = true
         return container
     }

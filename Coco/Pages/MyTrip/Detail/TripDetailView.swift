@@ -8,23 +8,20 @@ struct HostDetail {
 }
 
 struct BookingDetailDataModel {
+    let bookingId: Int
     let imageString: String
     let activityName: String
     let packageName: String
     let location: String
-    
     let bookingDateDisplay: String
     let status: StatusLabel
     let paxNumber: Int
-    
     let priceText: String
     let address: String
-    
     let host: HostDetail?
-    
     let bookedByName: String
-    
     let facilities: [String]
+    let includedAccessories: [String]
     
     struct StatusLabel {
         let text: String
@@ -35,7 +32,7 @@ struct BookingDetailDataModel {
         var bookingStatus: String = bookingDetail.status
         var statusStyle: CocoStatusLabelStyle = .pending
         
-        self.bookedByName = bookingDetail.user?.name ?? "Hany Wijaya"
+        self.bookedByName = bookingDetail.plannerName
         
         //        let formatter: DateFormatter = DateFormatter()
         //        formatter.dateFormat = "YYYY-MM-dd"
@@ -56,6 +53,7 @@ struct BookingDetailDataModel {
         }
         
         status = StatusLabel(text: bookingStatus, style: statusStyle)
+        bookingId = bookingDetail.bookingId
         imageString = bookingDetail.destinationImage
         activityName = bookingDetail.activityTitle
         packageName = bookingDetail.packageName ?? ""
@@ -83,6 +81,28 @@ struct BookingDetailDataModel {
         
         // facilities
         self.facilities = TripFacilitiesProvider.shared.facilities(for: bookingDetail)
+        self.includedAccessories = bookingDetail.includedAccessories
+    }
+}
+
+extension BookingDetailDataModel {
+    init(trip: TripBookingDetails) {
+        let style: CocoStatusLabelStyle = trip.date < Calendar.current.startOfDay(for: Date()) ? .success : .refund
+        
+        self.status = .init(text: trip.status.capitalized, style: style)
+        bookingId     = trip.bookingId
+        imageString   = trip.destinationImage ?? ""
+        activityName  = trip.activityTitle
+        packageName   = trip.packageName
+        location      = trip.destinationName
+        paxNumber     = trip.participants
+        address       = trip.destinationName
+        bookingDateDisplay = Formatters.tripDateDisplay.string(from: trip.date)
+        priceText = Formatters.idr((trip.totalPrice as NSDecimalNumber).doubleValue)
+        host = nil
+        bookedByName = trip.plannerName
+        facilities = trip.includedAccessories
+        includedAccessories = trip.includedAccessories
     }
 }
 
@@ -90,22 +110,12 @@ final class TripFacilitiesProvider {
     static let shared = TripFacilitiesProvider()
     private init() {}
     
+    func facilities(for trip: TripBookingDetails) -> [String] {
+        return trip.includedAccessories
+    }
+    
     func facilities(for booking: BookingDetails) -> [String] {
-        let name = booking.packageName?.lowercased() ?? ""
-        let title = booking.activityTitle.lowercased()
-        
-        // Contoh aturan dummy
-        if name.contains("snorkel") || title.contains("snorkel") {
-            return ["Snorkeling Gear", "Life Jacket", "Bottled Water", "Certified Guide"]
-        }
-        if name.contains("liveaboard") {
-            return ["Meals", "Cabin", "Dive Guide", "Towels"]
-        }
-        if booking.destinationName.lowercased().contains("bali") {
-            return ["Certified Guide", "Free Meal", "Water Bottle"]
-        }
-        // default
-        return ["Certified Guide", "Water Bottle"]
+        return booking.includedAccessories
     }
 }
 
@@ -118,6 +128,10 @@ final class TripDetailView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let facilitiesSectionView = FacilitiesSectionView(title: "This Trip Includes", items: [])
+    
+    private let qrSection = QRCodeSection()
     
     func configureView(_ data: BookingDetailDataModel) {
         activityImage.loadImage(from: URL(string: data.imageString))
@@ -133,9 +147,16 @@ final class TripDetailView: UIView {
         priceDetailPrice.text = data.priceText
         
         addressLabel.text = data.address
-        locationTextLabel.text = data.location
+        locationSection.configure(text: data.location)
         
         bookedByNameValueLabel.text = data.bookedByName
+        facilitiesSectionView.isHidden = data.includedAccessories.isEmpty
+        facilitiesSectionView.update(items: data.includedAccessories)
+        
+        whatsAppSection.configure(title: "Join the Trip WhatsApp Community")
+        
+        let payload = "booking:\(data.bookingId)"
+        qrSection.configure(title: "View QR Code", payload: payload)
         
         if let host = data.host {
             vendorNameValueLabel.text  = host.name
@@ -147,11 +168,6 @@ final class TripDetailView: UIView {
             vendorEmailValueLabel.text = "host@gmail.com"
             vendorPhoneValueLabel.text = "+62 8123456789"
             vendorSectionView.isHidden = false
-        }
-        
-        if !data.facilities.isEmpty {
-            let facilities = FacilitiesSectionView(title: "This Trip Includes", items: data.facilities)
-            insertFacilitiesSection(facilities)
         }
         
     }
@@ -192,6 +208,22 @@ final class TripDetailView: UIView {
         numberOfLines: 2
     )
     
+    private let iconCalendarView: UIImageView = {
+        let iconview = UIImageView(image: CocoIcon.icCalendarIcon.image)
+        iconview.contentMode = .scaleAspectFit
+        iconview.setContentHuggingPriority(.required, for: .horizontal)
+        iconview.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return iconview
+    }()
+    
+    private let iconUserView: UIImageView = {
+        let iconview = UIImageView(image: CocoIcon.icuserIcon.image)
+        iconview.contentMode = .scaleAspectFit
+        iconview.setContentHuggingPriority(.required, for: .horizontal)
+        iconview.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return iconview
+    }()
+    
     private lazy var activityDateLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .callout, weight: .medium),
         textColor: Token.grayscale90,
@@ -205,74 +237,21 @@ final class TripDetailView: UIView {
     )
     
     // Location (Maps)
-    private lazy var locationIconView: UIImageView = {
-        let iv = UIImageView(image: CocoIcon.icPinPointBlue.image)
-        iv.contentMode = .scaleAspectFit
-        iv.setContentHuggingPriority(.required, for: .horizontal)
-        iv.setContentCompressionResistancePriority(.required, for: .horizontal)
-        return iv
-    }()
+    private let locationSection = LocationSectionView()
     
-    private lazy var locationTextLabel: UILabel = {
-        let label = UILabel(
-            font: .jakartaSans(forTextStyle: .body, weight: .regular),
-            textColor: Token.grayscale90,
-            numberOfLines: 1
-        )
-        label.text = "Location…"
-        label.lineBreakMode = .byTruncatingTail
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        return label
-    }()
+    var onLocationTapped: (() -> Void)? {
+        get { locationSection.onTap }
+        set { locationSection.onTap = newValue }
+    }
     
-    private lazy var locationChevronView: UIImageView = {
-        let iv = UIImageView(image: CocoIcon.icChevronRight.image)
-        //        let img = CocoIcon.icChevronRight.image ?? UIImage(systemName: "chevronRight")
-        //        let iv = UIImageView(image: img)
-        iv.tintColor = Token.grayscale60
-        iv.contentMode = .scaleAspectFit
-        iv.setContentHuggingPriority(.required, for: .horizontal)
-        iv.setContentCompressionResistancePriority(.required, for: .horizontal)
-        return iv
-    }()
+    // WhatsApp
+    private let whatsAppSection = WhatsAppSectionView()
     
-    private lazy var locationRow: UIView = {
-        let container = UIView()
-        container.layer.cornerRadius = 6
-        container.layer.borderWidth = 1
-        container.layer.borderColor = Token.additionalColorsLine.cgColor
-        container.backgroundColor = Token.additionalColorsWhite
-        container.isUserInteractionEnabled = true
-        
-        container.layout { $0.height(52) }
-        
-        container.addSubviews([locationIconView, locationTextLabel, locationChevronView])
-        
-        locationIconView.layout {
-            $0.leading(to: container.leadingAnchor, constant: 12)
-                .centerY(to: container.centerYAnchor)
-                .size(22)
-        }
-        
-        locationTextLabel.layout {
-            $0.leading(to: locationIconView.trailingAnchor, constant: 10)
-                .trailing(to: locationChevronView.leadingAnchor, constant: -10)
-                .centerY(to: container.centerYAnchor)
-        }
-        
-        locationChevronView.layout {
-            $0.trailing(to: container.trailingAnchor, constant: -12)
-                .centerY(to: container.centerYAnchor)
-                .size(22)
-        }
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapLocationRow))
-        container.addGestureRecognizer(tap)
-        
-        return container
-    }()
-    
+    var onWhatsAppTapped: (() -> Void)? {
+        get { whatsAppSection.onTap }
+        set { whatsAppSection.onTap = newValue }
+    }
+
     private lazy var bookingDateSection: UIView = createSectionTitle(title: "Date Booking", view: bookingDateLabel)
     private lazy var bookingDateLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .body, weight: .bold),
@@ -356,10 +335,6 @@ final class TripDetailView: UIView {
         l.setContentHuggingPriority(.required, for: .horizontal)
         return l
     }()
-    
-    
-    //    private lazy var packageNameSection: UIView = createSectionTitle(title: "Package Name", view: activityDescriptionTitle)
-    //
     
     private lazy var activityDescriptionTitle: UILabel = {
         let title = UILabel(
@@ -501,7 +476,7 @@ final class TripDetailView: UIView {
     func renderTravelers(_ travelers: [Traveler]) {
         travelerSection.renderTravelers(travelers)
     }
-    
+
 }
 
 private extension TripDetailView {
@@ -510,14 +485,14 @@ private extension TripDetailView {
         print("Location row tapped")
     }
     
-    private func insertFacilitiesSection(_ view: UIView) {
-        // Contoh: taruh setelah locationRow (cari index-nya di stack)
-        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
-            contentStackView.insertArrangedSubview(view, at: idx + 1)
-        } else {
-            contentStackView.addArrangedSubview(view)
-        }
-    }
+//    private func insertFacilitiesSection(_ view: UIView) {
+//        // Contoh: taruh setelah locationRow (cari index-nya di stack)
+//        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
+//            contentStackView.insertArrangedSubview(view, at: idx + 1)
+//        } else {
+//            contentStackView.addArrangedSubview(view)
+//        }
+//    }
     
     func setupView() {
         // 1) Tambah scrollView lalu isi dengan stack
@@ -576,20 +551,24 @@ private extension TripDetailView {
         
         let actionSection = ActionSectionView()
         let importantNoticeSection = ImportantNoticeSectionView()
+        let facilitiesView = FacilitiesSectionView(title: "This Trip Includes",
+                                                   items: [])
         
         // URUTAN VSTACK
         contentStackView.addArrangedSubview(activityDetailView)
+        contentStackView.addArrangedSubview(locationSection)
         contentStackView.addArrangedSubview(createLineDivider())
         contentStackView.addArrangedSubview(bookedByNameRow)
         contentStackView.addArrangedSubview(statusRow)
         contentStackView.addArrangedSubview(createDashedDivider())
         contentStackView.addArrangedSubview(packageRow)
         contentStackView.addArrangedSubview(priceDetailSection)
-        contentStackView.addArrangedSubview(locationRow)
+        contentStackView.addArrangedSubview(qrSection)
+        contentStackView.addArrangedSubview(facilitiesSectionView)
         contentStackView.addArrangedSubview(createLineDivider())
         contentStackView.addArrangedSubview(travelerSection)
         contentStackView.addArrangedSubview(vendorSectionView)
-        contentStackView.addArrangedSubview(actionSection)
+        contentStackView.addArrangedSubview(whatsAppSection)
         contentStackView.addArrangedSubview(importantNoticeSection)
         //        contentStackView.addArrangedSubview(addressSection)
         
@@ -601,6 +580,8 @@ private extension TripDetailView {
         containerView.addSubviews([
             activityImage,
             activityTitle,
+            iconCalendarView,
+            iconUserView,
             activityDateLabel,
             paxNumberLabel
         ])
@@ -615,13 +596,24 @@ private extension TripDetailView {
                 .top(to: containerView.topAnchor)
                 .trailing(to: containerView.trailingAnchor)
         }
-        activityDateLabel.layout {
+        
+        iconCalendarView.layout {
             $0.leading(to: activityTitle.leadingAnchor)
+                .top(to: activityTitle.bottomAnchor, constant: 4.0)
+        }
+        activityDateLabel.layout {
+            $0.leading(to: iconCalendarView.leadingAnchor, constant: 25.0)
                 .top(to: activityTitle.bottomAnchor, constant: 4.0)
                 .trailing(to: containerView.trailingAnchor)
         }
+        
+        iconUserView.layout {
+            $0.leading(to: activityTitle.leadingAnchor)
+                .top(to: activityTitle.bottomAnchor, constant: 25.0)
+                .bottom(to: containerView.bottomAnchor)
+        }
         paxNumberLabel.layout {
-            $0.leading(to: activityDateLabel.leadingAnchor)
+            $0.leading(to: iconUserView.leadingAnchor, constant: 25)
                 .top(to: activityDateLabel.bottomAnchor, constant: 4.0)
                 .trailing(to: containerView.trailingAnchor)
                 .bottom(to: containerView.bottomAnchor)

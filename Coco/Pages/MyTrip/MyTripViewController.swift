@@ -36,7 +36,6 @@ final class MyTripViewController: UIViewController {
         
         thisView.setSegmentIndex(storedFilterIndex)
         
-        
         viewModel.onViewWillAppear()
     }
     
