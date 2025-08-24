@@ -19,7 +19,7 @@ final class InviteTravelerCellView: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureView(dataModel: InviteTravelerCellDataModel, index: Int) {
+    func configureView(dataModel: Traveler, index: Int) {
         self.index = index
         textView.text = dataModel.email
     }
@@ -36,23 +36,18 @@ protocol InviteTravelerCellViewDelegate: AnyObject {
 
 private extension InviteTravelerCellView {
     func setupView() {
-        let stackView = UIStackView(arrangedSubviews: [cardEmailView])
-        
-        stackView.axis = .vertical
-        stackView.spacing = 0
-        
-        contentView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(cardEmailView)
+        cardEmailView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            cardEmailView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            cardEmailView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            cardEmailView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
         ])
     }
     
     func createTextView() -> UILabel {
         return UILabel(
-            font: .jakartaSans(forTextStyle: .caption1, weight: .semibold),
+            font: .jakartaSans(forTextStyle: .caption1, weight: .medium),
             textColor: Token.additionalColorsBlack,
             numberOfLines: 1
         )
@@ -78,6 +73,7 @@ private extension InviteTravelerCellView {
         let stackView = UIStackView(arrangedSubviews: [textView, iconView])
         stackView.axis = .horizontal
         stackView.distribution = .equalSpacing
+        stackView.alignment = .center
         
         stackView.backgroundColor = Token.mainColorSecondary
         stackView.layer.cornerRadius = 8

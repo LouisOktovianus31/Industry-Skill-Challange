@@ -19,7 +19,9 @@ struct HomeSearchBarView: View {
             placeholder: viewModel.placeholderText,
             shouldInterceptFocus: !viewModel.isTypeAble,
             onFocusedAction: viewModel.onTextFieldFocusDidChange(to:),
-            onSubmit: viewModel.onSubmit
+            onSubmit: viewModel.onSubmit,
+            error: $viewModel.error,
+            errorMessage: $viewModel.errorMessage
         )
     }
 }

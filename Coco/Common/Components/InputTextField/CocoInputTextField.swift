@@ -12,6 +12,8 @@ private let kInputHeight: CGFloat = 52.0
 
 struct CocoInputTextField: View {
     @Binding var currentTypedText: String
+    @Binding var error: Bool
+    @Binding var errorMessage: String?
     
     private let shouldInterceptFocus: Bool
     private let leadingIcon: UIImage?
@@ -21,8 +23,6 @@ struct CocoInputTextField: View {
     @FocusState private var isFocused: Bool
     private let onFocusedAction: ((Bool) -> Void)?
     private var onSubmit: ((String) -> Void)?
-    private var error: Bool = false
-    private var errorMessage: String?
     
     init(
         leadingIcon: UIImage? = nil,
@@ -32,8 +32,8 @@ struct CocoInputTextField: View {
         shouldInterceptFocus: Bool = false,
         onFocusedAction: ((Bool) -> Void)? = nil,
         onSubmit: ((String) -> Void)? = nil,
-        error: Bool = false,
-        errorMessage: String? = nil
+        error: Binding<Bool>,
+        errorMessage: Binding<String?>
     ) {
         self.leadingIcon = leadingIcon
         _currentTypedText = currentTypedText
@@ -42,8 +42,8 @@ struct CocoInputTextField: View {
         self.shouldInterceptFocus = shouldInterceptFocus
         self.onFocusedAction = onFocusedAction
         self.onSubmit = onSubmit
-        self.error = error
-        self.errorMessage = errorMessage
+        _error = error
+        _errorMessage = errorMessage
     }
     
     var body: some View {
@@ -71,7 +71,7 @@ struct CocoInputTextField: View {
             onSubmit?(currentTypedText)
         }
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 24)
                 .stroke(error ? Color.red : Color.gray.opacity(0.3), lineWidth: 1)
         )
         
@@ -79,7 +79,9 @@ struct CocoInputTextField: View {
             Text(errorMessage)
                 .font(.footnote)
                 .foregroundColor(.red)
-                .padding(.horizontal, 4)
+                .padding(.bottom, 12)
+                .padding(.leading, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

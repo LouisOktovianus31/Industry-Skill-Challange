@@ -18,7 +18,7 @@ final class TripDetailViewModel {
         
         self.travelers = data.memberEmails.map { email in
             let name = email.components(separatedBy: "@").first?.replacingOccurrences(of: ".", with: " ") ?? "Traveller"
-            return Traveler(name: name)
+            return Traveler(name: name, email: email)
         }
     }
     
@@ -47,7 +47,7 @@ final class TripDetailViewModel {
 
     
     private(set) lazy var inviteTravelerViewModel: InviteTravelerViewModelProtocol = {
-        let viewModel: InviteTravelerViewModel = InviteTravelerViewModel(data: dataList)
+        let viewModel: InviteTravelerViewModel = InviteTravelerViewModel()
         //        viewModel.delegate = self
         
         return viewModel
@@ -84,8 +84,9 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
                     self?.data = details
                     self?.travelers = details.memberEmails.map {
                         let name = $0.components(separatedBy: "@").first?.replacingOccurrences(of: ".", with: " ") ?? "Traveler"
-                        return Traveler(name: name)
+                        return Traveler(name: name, email: $0)
                     }
+                    self?.inviteTravelerViewModel.setData(details)
                     self?.actionDelegate?.configureView(dataModel: .init(trip: details))
                     self?.invitesOutput?.didUpdateTravelers(self?.travelers ?? [])
                 }
@@ -124,9 +125,10 @@ extension TripDetailViewModel {
 
 // MARK: - Actions (dummy for now)
 extension TripDetailViewModel {
-    func addTravelerDummy(name: String) {
-        travelers.append(Traveler(name: name))
+    func addTravelerDummy(name: String, email: String) {
+        travelers.append(Traveler(name: name, email: email))
         invitesOutput?.didUpdateTravelers(travelers)
+        
     }
     
     func removeTraveler(id: UUID) {

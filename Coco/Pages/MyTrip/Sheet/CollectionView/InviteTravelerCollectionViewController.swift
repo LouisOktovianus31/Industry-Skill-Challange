@@ -67,7 +67,7 @@ private extension InviteTravelerCollectionViewController {
         let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.contentInset = .init(top: 0, left: 0, bottom: 8.0, right: 0)
+        collectionView.contentInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         collectionView.register(InviteTravelerCellView.self, forCellWithReuseIdentifier: "InviteTravelerCellView")
         
         return collectionView
@@ -88,8 +88,8 @@ private extension InviteTravelerCollectionViewController {
                 alignment: .top
             )
             section.boundarySupplementaryItems = [sectionHeader]
-            section.interGroupSpacing = CGFloat(20)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 8.0, trailing: 0)
+            section.interGroupSpacing = CGFloat(8)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
 
             return section
         }

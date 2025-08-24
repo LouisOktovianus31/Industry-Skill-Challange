@@ -8,9 +8,9 @@
 import Foundation
 
 protocol InviteTravellerCollectionViewModelProtocol: AnyObject {
-    var emailTravelerListData: [InviteTravelerCellDataModel] { get }
+    var emailTravelerListData: [Traveler] { get }
     var onDataUpdated: (() -> Void)? { get set }
     
     func onRemoveEmailTraveler(at index: Int)
-    func onAddEmailTraveler(_ email: String, data: BookingDetails)
+    func onAddEmailTraveler(_ email: String)
 }

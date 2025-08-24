@@ -93,7 +93,8 @@ struct UserBooking: JSONDecodable {
 
 struct Traveler: Hashable{
     let id: UUID = .init()
-    let name: String
+    let name: String?
+    let email: String
 }
 
 extension BookingDetails {
