@@ -23,8 +23,8 @@ struct BookingDetails: JSONDecodable {
     let status: String
     let bookingId: Int
 //    let userId: Int
-    let plannerName: String?
     let isPlanner: Bool?
+    let plannerName: String?
     let startTime: String?
     let destination: BookingDestination?
     let destinationName: String?
@@ -46,12 +46,12 @@ struct BookingDetails: JSONDecodable {
         case status
         case bookingId = "booking_id"
 //        case userId = "user_id"
+        case isPlanner = "is_planner"
         case plannerName = "planner_name"
         case startTime = "start_time"
         case destination
         case destinationName = "destination_name"
         case destinationImage = "destination_image"
-        case isPlanner = "is_planner"
         case totalPrice = "total_price"
         case packageName = "package_name"
         case participants
@@ -122,7 +122,7 @@ extension BookingDetails {
 //        self.userId          = trip.userId
         self.bookingId        = trip.bookingId
         self.plannerName      = trip.plannerName
-        self.isPlanner        = false
+        self.isPlanner        = trip.isPlanner
         // Tidak ada di TripBookingDetails → set ke nil
         self.startTime        = nil
         
@@ -160,8 +160,8 @@ extension BookingDetails {
         status: "",
         bookingId: 0,
 //        userId: 0,
-        plannerName: "",
         isPlanner: false,
+        plannerName: "",
         startTime: nil,
         destination: nil,
         destinationName: "",
