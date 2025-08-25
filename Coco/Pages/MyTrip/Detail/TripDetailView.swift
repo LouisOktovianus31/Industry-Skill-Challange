@@ -9,6 +9,7 @@ struct HostDetail {
 
 struct BookingDetailDataModel {
     let bookingId: Int
+//    let userId: Int
     let imageString: String
     let activityName: String
     let packageName: String
@@ -54,6 +55,7 @@ struct BookingDetailDataModel {
         
         status = StatusLabel(text: bookingStatus, style: statusStyle)
         bookingId = bookingDetail.bookingId
+//        userId = bookingDetail.userId
         imageString = bookingDetail.destinationImage
         activityName = bookingDetail.activityTitle
         packageName = bookingDetail.packageName ?? ""
@@ -91,6 +93,7 @@ extension BookingDetailDataModel {
         
         self.status = .init(text: trip.status.capitalized, style: style)
         bookingId     = trip.bookingId
+//        userId        = trip.userId
         imageString   = trip.destinationImage ?? ""
         activityName  = trip.activityTitle
         packageName   = trip.packageName

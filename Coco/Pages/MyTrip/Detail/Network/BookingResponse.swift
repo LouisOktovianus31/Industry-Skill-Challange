@@ -17,6 +17,7 @@ private extension ISO8601DateFormatter {
 
 struct TripBookingDetails: JSONDecodable {
     let bookingId: Int
+//    let userId: Int
     let date: Date
     let plannerName: String
     let participants: Int
@@ -35,6 +36,7 @@ struct TripBookingDetails: JSONDecodable {
     // MARK: - Memberwise init supaya bisa bikin placeholder
     init(
         bookingId: Int,
+//        userId: Int,
         date: Date,
         plannerName: String,
         participants: Int,
@@ -51,6 +53,7 @@ struct TripBookingDetails: JSONDecodable {
         memberEmails: [String]
     ) {
         self.bookingId = bookingId
+//        self.userId = userId
         self.date = date
         self.plannerName = plannerName
         self.participants = participants
@@ -69,6 +72,7 @@ struct TripBookingDetails: JSONDecodable {
     
     enum CodingKeys: String, CodingKey {
         case bookingId          = "booking_id"
+//        case userId             = "user_id"
         case date
         case plannerName       = "planner_name"
         case participants
@@ -89,6 +93,8 @@ struct TripBookingDetails: JSONDecodable {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         
         bookingId = try c.decode(Int.self, forKey: .bookingId)
+        
+//        userId = try c.decode(Int.self, forKey: .userId)
         
         // "2024-08-25T00:00:00.000Z" -> Date
         let dateString = try c.decode(String.self, forKey: .date)
@@ -141,6 +147,7 @@ private extension TripBookingDetails {
     static var placeholderForInit: TripBookingDetails {
         .init(
             bookingId: 0,
+//            userId: 0,
             date: Date(),
             plannerName: "-",
             participants: 0,

@@ -22,6 +22,7 @@ struct CreateBookingResponse: JSONDecodable {
 struct BookingDetails: JSONDecodable {
     let status: String
     let bookingId: Int
+//    let userId: Int
     let plannerName: String
     let isPlanner: Bool
     let startTime: String?
@@ -42,6 +43,7 @@ struct BookingDetails: JSONDecodable {
     enum CodingKeys: String, CodingKey {
         case status
         case bookingId = "booking_id"
+//        case userId = "user_id"
         case plannerName = "planner_name"
         case startTime = "start_time"
         case destinationName = "destination_name"
@@ -99,6 +101,7 @@ extension BookingDetails {
     // Bridge dari TripBookingDetails (detail RPC) ke BookingDetails (format lama UI)
     init(trip: TripBookingDetails) {
         self.status           = trip.status
+//        self.userId          = trip.userId
         self.bookingId        = trip.bookingId
         self.plannerName      = trip.plannerName
         self.isPlanner        = false
@@ -136,6 +139,7 @@ extension BookingDetails {
     static let empty = BookingDetails(
         status: "",
         bookingId: 0,
+//        userId: 0,
         plannerName: "",
         isPlanner: false,
         startTime: nil,
