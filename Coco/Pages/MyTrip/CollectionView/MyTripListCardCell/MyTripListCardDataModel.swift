@@ -29,7 +29,7 @@ struct MyTripListCardDataModel {
         inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         inputFormatter.locale = Locale(identifier: "en_US_POSIX")
         
-        if let date = inputFormatter.date(from: bookingDetail.activityDate) {
+        if let date = inputFormatter.date(from: bookingDetail.activityDate ?? "") {
             let outputFormatter: DateFormatter = DateFormatter()
             outputFormatter.dateFormat = "EEE, dd MMM yyyy"
             outputFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -37,15 +37,15 @@ struct MyTripListCardDataModel {
             dateResult = outputFormatter.string(from: date)
             actualDate = date
         } else {
-            dateResult = bookingDetail.activityDate
+            dateResult = bookingDetail.activityDate ?? ""
         }
         
         id = bookingDetail.bookingId
-        imageUrl = bookingDetail.destinationImage
+        imageUrl = bookingDetail.destinationImage ?? ""
         dateText = dateResult
         date = actualDate
-        title = bookingDetail.activityTitle
-        location = bookingDetail.destinationName
-        bookedBy = "BookedBy: \(bookingDetail.isPlanner ? "You" : bookingDetail.plannerName)"
+        title = bookingDetail.activityTitle ?? ""
+        location = bookingDetail.destinationName ?? ""
+        bookedBy = "BookedBy: \((bookingDetail.isPlanner ?? false) ? "You" : (bookingDetail.plannerName ?? "Unknown"))"
     }
 }

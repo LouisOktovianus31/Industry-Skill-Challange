@@ -23,16 +23,18 @@ struct BookingDetails: JSONDecodable {
     let status: String
     let bookingId: Int
 //    let userId: Int
-    let plannerName: String
-    let isPlanner: Bool
+    let plannerName: String?
+    let isPlanner: Bool?
     let startTime: String?
-    let destinationName: String
-    let destinationImage: String
+    let destination: BookingDestination?
+    let destinationName: String?
+    let destinationImage: String?
     let totalPrice: Double?
     let packageName: String?
     let participants: Int?
-    let activityDate: String
-    let activityTitle: String
+    let activityDate: String?
+    let activityDate2: String? // INI BUAT DATE DI CREATE BOOKING
+    let activityTitle: String?
     let bookingCreatedAt: String?
     let address: String?
     let host: HostPackage?
@@ -46,12 +48,14 @@ struct BookingDetails: JSONDecodable {
 //        case userId = "user_id"
         case plannerName = "planner_name"
         case startTime = "start_time"
+        case destination
         case destinationName = "destination_name"
         case destinationImage = "destination_image"
         case isPlanner = "is_planner"
         case totalPrice = "total_price"
         case packageName = "package_name"
         case participants
+        case activityDate2 = "activity_date"
         case activityDate = "date"
         case activityTitle = "activity_title"
         case bookingCreatedAt = "booking_created_at"
@@ -60,6 +64,20 @@ struct BookingDetails: JSONDecodable {
         case user
         case facilities
         case includedAccessories = "included_accessories"
+    }
+}
+
+struct BookingDestination: JSONDecodable {
+    let id: Int
+    let name: String
+    let imageUrl: String?
+    let description: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case imageUrl = "image_url"
+        case description
     }
 }
 
@@ -120,6 +138,7 @@ extension BookingDetails {
         
         // Date → "yyyy-MM-dd" (menyesuaikan Formatters.apiDateParser)
         self.activityDate     = Formatters.apiDateParser.string(from: trip.date)
+        self.activityDate2     = nil
         
         self.activityTitle    = trip.activityTitle
         
@@ -128,6 +147,7 @@ extension BookingDetails {
         self.address          = trip.destinationName
         self.host             = nil
         self.user             = nil
+        self.destination = nil
         
         // Nama berbeda: includedAccessories → facilities
         self.facilities       = trip.includedAccessories
@@ -143,12 +163,14 @@ extension BookingDetails {
         plannerName: "",
         isPlanner: false,
         startTime: nil,
+        destination: nil,
         destinationName: "",
         destinationImage: "",
         totalPrice: 0,
         packageName: nil,
         participants: 0,
         activityDate: "",
+        activityDate2: "",
         activityTitle: "",
         bookingCreatedAt: nil,
         address: nil,
