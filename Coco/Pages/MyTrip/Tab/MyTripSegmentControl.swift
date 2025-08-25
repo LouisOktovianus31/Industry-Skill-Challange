@@ -94,7 +94,7 @@ extension UIImage {
         graphicsContext?.fill(rectangle)
         let rectangleImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return rectangleImage!
+        return rectangleImage ?? UIImage()
     }
 
 }

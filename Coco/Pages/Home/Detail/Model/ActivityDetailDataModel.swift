@@ -36,9 +36,9 @@ struct ActivityDetailDataModel: Equatable {
     }
     
     init(_ bookingDetails: BookingDetails) {
-        title = bookingDetails.activityTitle
-        location = bookingDetails.destinationName
-        imageUrlsString = [bookingDetails.destinationImage]
+        title = bookingDetails.activityTitle ?? ""
+        location = bookingDetails.destinationName ?? ""
+        imageUrlsString = [bookingDetails.destinationImage ?? ""]
         
         detailInfomation = ActivitySectionLayout(
             title: "Details",
@@ -61,7 +61,7 @@ struct ActivityDetailDataModel: Equatable {
         availablePackages = ActivitySectionLayout(
             title: "Available Packages",
             content: [Package(
-                imageUrlString: bookingDetails.destinationImage,
+                imageUrlString: bookingDetails.destinationImage ?? "",
                 name: bookingDetails.packageName ?? "",
                 description: "",
                 price: "",
