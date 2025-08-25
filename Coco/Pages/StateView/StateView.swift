@@ -54,7 +54,7 @@ private extension StateView {
     }
     
     func createIconView() -> UIImageView {
-        let imageView = UIImageView(image: UIImage(named: "emptyIcon"))
+        let imageView = UIImageView(image: CocoIcon.icEmptyIcon.image)
         imageView.contentMode = .scaleAspectFit
         
         return imageView

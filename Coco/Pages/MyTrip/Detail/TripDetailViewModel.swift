@@ -136,7 +136,6 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         let today = Date()
         
         let isParticipantsMoreThanOne = data.participants > 1
-        print("data.date:\(data.date)")
         let isPlanner = true // todo update if BE complete
         let isUpcoming = data.date >= today
         

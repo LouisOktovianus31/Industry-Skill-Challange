@@ -255,6 +255,9 @@ final class TripDetailView: UIView {
         get { whatsAppSection.onTap }
         set { whatsAppSection.onTap = newValue }
     }
+    
+    // Calendar
+    private let addCalendarSection = AddCalendarSectionView()
 
     private lazy var bookingDateSection: UIView = createSectionTitle(title: "Date Booking", view: bookingDateLabel)
     private lazy var bookingDateLabel: UILabel = UILabel(
@@ -554,10 +557,7 @@ private extension TripDetailView {
                 .centerY(to: dateStatusSection.centerYAnchor)
         }
         
-        let actionSection = ActionSectionView()
         let importantNoticeSection = ImportantNoticeSectionView()
-        let facilitiesView = FacilitiesSectionView(title: "This Trip Includes",
-                                                   items: [])
         
         // URUTAN VSTACK
         contentStackView.addArrangedSubview(activityDetailView)
@@ -574,6 +574,7 @@ private extension TripDetailView {
         contentStackView.addArrangedSubview(travelerSection)
         contentStackView.addArrangedSubview(vendorSectionView)
         contentStackView.addArrangedSubview(whatsAppSection)
+        contentStackView.addArrangedSubview(addCalendarSection)
         contentStackView.addArrangedSubview(importantNoticeSection)
         //        contentStackView.addArrangedSubview(addressSection)
         
