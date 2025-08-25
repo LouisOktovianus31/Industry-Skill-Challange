@@ -9,6 +9,7 @@ struct HostDetail {
 
 struct BookingDetailDataModel {
     let bookingId: Int
+//    let userId: Int
     let imageString: String
     let activityName: String
     let packageName: String
@@ -32,12 +33,12 @@ struct BookingDetailDataModel {
         var bookingStatus: String = bookingDetail.status
         var statusStyle: CocoStatusLabelStyle = .pending
         
-        self.bookedByName = bookingDetail.plannerName
+        self.bookedByName = bookingDetail.plannerName ?? ""
         
         //        let formatter: DateFormatter = DateFormatter()
         //        formatter.dateFormat = "YYYY-MM-dd"
         
-        if let targetDate = Formatters.apiDateParser.date(from: bookingDetail.activityDate) {
+        if let targetDate = Formatters.apiDateParser.date(from: bookingDetail.activityDate ?? "") {
             let cal = Calendar(identifier: .gregorian)
             let today = cal.startOfDay(for: Date())
             let day = cal.startOfDay(for: targetDate)
@@ -54,20 +55,20 @@ struct BookingDetailDataModel {
         
         status = StatusLabel(text: bookingStatus, style: statusStyle)
         bookingId = bookingDetail.bookingId
-        imageString = bookingDetail.destinationImage
-        activityName = bookingDetail.activityTitle
+        imageString = bookingDetail.destinationImage ?? ""
+        activityName = bookingDetail.activityTitle ?? ""
         packageName = bookingDetail.packageName ?? ""
-        location = bookingDetail.destinationName
+        location = bookingDetail.destinationName ?? ""
         paxNumber = bookingDetail.participants ?? 0
         //        price = bookingDetail.totalPrice
         address = bookingDetail.address ?? ""
         //        bookingDateText = bookingDetail.activityDate
         
         // display date
-        if let d = Formatters.apiDateParser.date(from: bookingDetail.activityDate) {
+        if let d = Formatters.apiDateParser.date(from: bookingDetail.activityDate ?? "") {
             bookingDateDisplay = Formatters.tripDateDisplay.string(from: d)
         } else {
-            bookingDateDisplay = bookingDetail.activityDate
+            bookingDateDisplay = bookingDetail.activityDate ?? ""
         }
         
         // display price
@@ -91,6 +92,7 @@ extension BookingDetailDataModel {
         
         self.status = .init(text: trip.status.capitalized, style: style)
         bookingId     = trip.bookingId
+//        userId        = trip.userId
         imageString   = trip.destinationImage ?? ""
         activityName  = trip.activityTitle
         packageName   = trip.packageName

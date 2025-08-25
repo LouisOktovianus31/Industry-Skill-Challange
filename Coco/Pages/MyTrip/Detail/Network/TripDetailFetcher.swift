@@ -13,8 +13,10 @@ protocol TripDetailFetcherProtocol {
 
 struct TripDetailRequest: JSONEncodable {
     let bookingId: Int
+    let userId: String
     enum CodingKeys: String, CodingKey {
         case bookingId = "booking_id"
+        case userId = "user_id"
     }
 }
 
@@ -30,12 +32,16 @@ final class TripDetailFetcher: TripDetailFetcherProtocol {
     }
     
     func fetchTripDetail(bookingId: Int) async throws -> TripBookingDetails {
-        try await network.request(
+        guard let userId = UserDefaults.standard.string(forKey: "user-id") else {
+                    throw NSError(domain: "TripDetailFetcher", code: -1, userInfo: [NSLocalizedDescriptionKey: "User ID not found"])
+                }
+        
+        return try await network.request(
             urlString: CreateBookingEndpoint.getBookingDetails.urlString,
             method: .post,
             parameters: [:],
             headers: [:],
-            body: TripDetailRequest(bookingId: bookingId)
+            body: TripDetailRequest(bookingId: bookingId, userId: userId)
         )
     }
 }
