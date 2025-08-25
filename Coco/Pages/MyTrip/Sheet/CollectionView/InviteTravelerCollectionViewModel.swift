@@ -8,7 +8,7 @@
 import Foundation
 
 final class InviteTravelerCollectionViewModel {
-    private(set) var emailTravelerListData: [InviteTravelerCellDataModel] = [] {
+    private(set) var emailTravelerListData: [Traveler] = [] {
         didSet {
             onDataUpdated?()
         }
@@ -17,24 +17,12 @@ final class InviteTravelerCollectionViewModel {
 }
 
 extension InviteTravelerCollectionViewModel: InviteTravellerCollectionViewModelProtocol {
-    func onAddEmailTraveler(_ email: String, data: BookingDetails) {
-        print("data\(data)")
-        guard email.contains("@") else {
-            print("Invalid email: must contain '@'")
-            return
-        }
-        
-        guard !emailTravelerListData.contains(where: { $0.email.lowercased() == email.lowercased() }) else {
-            print("Email already exists in the list")
-            return
-        }
-        
-        guard emailTravelerListData.count < data.participants ?? 0 else {
-            print("Cannot add more travelers. Participants: \(data.participants ?? 0)")
-            return
-        }
-        
-        emailTravelerListData.append(InviteTravelerCellDataModel(email: email))
+    func resetData() {
+        emailTravelerListData.removeAll()
+    }
+    
+    func onAddEmailTraveler(_ email: String) {
+        emailTravelerListData.append(Traveler(name: nil, email: email))
     }
     
     func onRemoveEmailTraveler(at index: Int) {

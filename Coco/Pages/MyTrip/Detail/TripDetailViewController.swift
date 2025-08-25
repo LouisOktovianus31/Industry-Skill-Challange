@@ -72,10 +72,22 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
     
     private let viewModel: TripDetailViewModelProtocol
     private let thisView: TripDetailView = TripDetailView()
+    
+    private var sheetNav: UINavigationController?
 }
 
 extension TripDetailViewController: TripDetailViewModelAction {
+    func onAddCalendarDidTap() {
+        viewModel.addEventCalendar()
+    }
+    
+    func closeInviteTravelerView() {
+        sheetNav?.dismiss(animated: true)
+    }
+    
     func configureFooter(viewModel: InviteTravelerViewModelProtocol) {
+        let isShowFooter = self.viewModel.isShowFooterView()
+        thisView.configureFooterView(isShowFooter)
         thisView.configureFooterViewAction {
             self.addTripMemberTapped(viewModel: viewModel)
         }
@@ -102,16 +114,20 @@ extension TripDetailViewController: TripDetailViewModelAction {
 
     private func addTripMemberTapped(viewModel: InviteTravelerViewModelProtocol) {
         let inviteTravellerViewController = InviteTravelerViewController(viewModel: viewModel)
-        inviteTravellerViewController.title = "Invite Traveler"
-        let nav = UINavigationController(rootViewController: inviteTravellerViewController)
-        nav.modalPresentationStyle = .pageSheet
         
-        if let sheet = nav.sheetPresentationController {
+        self.viewModel.updateInviteTravelerViewModel()
+        
+        inviteTravellerViewController.title = "Invite Traveler"
+        sheetNav = UINavigationController(rootViewController: inviteTravellerViewController)
+        sheetNav?.modalPresentationStyle = .pageSheet
+        
+        if let sheet = sheetNav?.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
         }
         
-        present(nav, animated: true, completion: nil)
+        if let nav = sheetNav {
+            present(nav, animated: true, completion: nil)
+        }
     }
-
 }

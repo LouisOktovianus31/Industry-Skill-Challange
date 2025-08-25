@@ -16,14 +16,14 @@ final class HomeSearchBarViewModel: ObservableObject {
     weak var delegate: HomeSearchBarViewModelDelegate?
     
     @Published var currentTypedText: String = ""
+    @Published var error: Bool = false
+    @Published var errorMessage: String? = nil
     
     let leadingIcon: UIImage?
     let trailingIcon: ImageHandler?
     let isTypeAble: Bool
     let placeholderText: String
     var onSubmit: ((String) -> Void)?
-    var error: Bool = false
-    var errorMessage: String?
     
     init(
         leadingIcon: UIImage?,

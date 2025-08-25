@@ -11,11 +11,13 @@ final class InviteTravelerViewModel: ObservableObject {
     weak var delegate: InviteTravelerViewModelDelegate?
     weak var action: InviteTravelerViewModelAction?
     
-    private let data: BookingDetails
+    private let fetcher: InviteTravelerFetcherProtocol?
     
-    init(data: BookingDetails) {
-        self.data = data
+    init(fetcher: InviteTravelerFetcherProtocol? = InviteTravelerFetcher()) {
+        self.fetcher = fetcher
     }
+    
+    private var data: TripBookingDetails? = nil
     
     private lazy var emailInputViewModel: HomeSearchBarViewModel = HomeSearchBarViewModel(
         leadingIcon: nil,
@@ -25,7 +27,7 @@ final class InviteTravelerViewModel: ObservableObject {
         isTypeAble: true,
         onSubmit: {  [weak self] email in
             guard let self = self else { return }
-            self.onInviteTravelerDidTap(email, data: self.data)
+            self.onInviteTravelerDidTap(email)
         },
         delegate: self
     )
@@ -38,15 +40,70 @@ final class InviteTravelerViewModel: ObservableObject {
     @Published var currentTypedText: String = ""
 }
 
+private extension InviteTravelerViewModel {
+    func setCollectionViewModelData() {
+        collectionViewModel.resetData()
+        data?.memberEmails.forEach({ email in
+            collectionViewModel.onAddEmailTraveler(email)
+        })
+    }
+}
+
 extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
+    func sendInviteTravelerRequest() {
+        Task { @MainActor in
+            do {
+                
+                let bookingId = data?.bookingId ?? 0
+                let emails = collectionViewModel.emailTravelerListData.map { $0.email }
+                
+                let _: [CreateBookingByEmailsResponse]? = try await fetcher?.fetchCreateBookingByEmails(
+                    bookingId: bookingId,
+                    emails: emails
+                ).values
+                
+                delegate?.notifyInviteTravellerComplete()
+            } catch {
+                
+            }
+        }
+
+    }
+    
+    func setData(_ data: TripBookingDetails?) {
+        self.data = data
+        setCollectionViewModelData()
+    }
+    
     func viewDidLoad() {
         action?.configureInputEmailView(viewModel: emailInputViewModel)
         action?.configureListEmailView(viewModel: collectionViewModel)
     }
     
-    func onInviteTravelerDidTap(_ email: String, data: BookingDetails) {
+    func onInviteTravelerDidTap(_ email: String) {
         self.currentTypedText = email
-        collectionViewModel.onAddEmailTraveler(email, data: self.data)
+        
+        guard email.contains("@") else {
+            emailInputViewModel.error = true
+            emailInputViewModel.errorMessage = "Invalid email: must contain '@'"
+            return
+        }
+        
+        guard !collectionViewModel.emailTravelerListData.contains(where: { $0.email.lowercased() == email.lowercased() }) else {
+            emailInputViewModel.error = true
+            emailInputViewModel.errorMessage = "Email already exists in the list"
+            return
+        }
+        
+        guard collectionViewModel.emailTravelerListData.count < (data?.participants ?? 0) - 1 else {
+            emailInputViewModel.error = true
+            emailInputViewModel.errorMessage = "Cannot add more travelers."
+            return
+        }
+        
+        emailInputViewModel.error = false
+        emailInputViewModel.errorMessage = nil
+        collectionViewModel.onAddEmailTraveler(email)
     }
 }
 

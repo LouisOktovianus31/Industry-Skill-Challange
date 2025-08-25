@@ -8,16 +8,20 @@
 import Foundation
 
 protocol InviteTravelerViewModelDelegate: AnyObject {
-    func notifyInviteTravelerDidTap(_ email: String)
+    func notifyInviteTravellerComplete()
 }
 protocol InviteTravelerViewModelAction: AnyObject {
     func configureInputEmailView(viewModel: HomeSearchBarViewModel)
     func configureListEmailView(viewModel: InviteTravellerCollectionViewModelProtocol)
+    
+    func onConfirmInviteTravelerDidTap()
 }
 protocol InviteTravelerViewModelProtocol: AnyObject {
     var delegate: InviteTravelerViewModelDelegate? { get set }
     var action: InviteTravelerViewModelAction? { get set }
     
-    func onInviteTravelerDidTap(_ email: String, data: BookingDetails)
+    func onInviteTravelerDidTap(_ email: String)
     func viewDidLoad()
+    func setData(_ data: TripBookingDetails?)
+    func sendInviteTravelerRequest()
 }

@@ -26,6 +26,7 @@ class InviteTravelerViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         viewModel.viewDidLoad()
+        thisView.action = self
     }
     
     override func loadView() {
@@ -34,8 +35,8 @@ class InviteTravelerViewController: UIViewController {
 }
 
 extension InviteTravelerViewController: InviteTravelerViewModelAction {
-    func configureBookingData(with data: BookingDetails) {
-        print("Bookings\(data)")
+    func onConfirmInviteTravelerDidTap() {
+        viewModel.sendInviteTravelerRequest()
     }
     
     func configureInputEmailView(viewModel: HomeSearchBarViewModel) {

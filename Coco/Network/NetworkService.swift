@@ -117,7 +117,6 @@ final class NetworkService: NetworkServiceProtocol {
                         }
                         completeOnMain(.success(casted), completion)
                     } catch {
-                        print("test \(error)")
                         completeOnMain(.failure(.decodingFailed(error)), completion)
                     }
                     return

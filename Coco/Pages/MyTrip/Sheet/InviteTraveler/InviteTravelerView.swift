@@ -31,7 +31,7 @@ final class InviteTravelerView: UIView {
     private lazy var inviteButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
         action: { [weak self] in
             guard let self else { return }
-            //            delegate?.notifyTripListCardDidTap(at: bookingId)
+            action?.onConfirmInviteTravelerDidTap()
         },
         text: "Confirm",
         style: .normal,
@@ -40,6 +40,7 @@ final class InviteTravelerView: UIView {
     )
     private lazy var inputEmailView: UIView = UIView()
     private lazy var emailListView: UIView = UIView()
+    weak var action: InviteTravelerViewModelAction?
 }
 
 private extension InviteTravelerView {
