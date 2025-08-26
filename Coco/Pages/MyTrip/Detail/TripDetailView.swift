@@ -2,7 +2,6 @@ import Foundation
 import UIKit
 
 
-
 final class TripFacilitiesProvider {
     static let shared = TripFacilitiesProvider()
     private init() {}
@@ -20,6 +19,10 @@ final class TripDetailView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        
+        addCalendarSection.onTap = { [weak self] in
+            self?.action?.onAddCalendarDidTap()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -115,7 +118,11 @@ final class TripDetailView: UIView {
         get { whatsAppSection.onTap }
         set { whatsAppSection.onTap = newValue }
     }
-
+    
+    // Calendar
+    private let addCalendarSection = AddCalendarSectionView()
+    weak var action: TripDetailViewModelAction?
+    
     private lazy var bookingDateSection: UIView = createSectionTitle(title: "Date Booking", view: bookingDateLabel)
     private lazy var bookingDateLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .body, weight: .bold),
@@ -340,7 +347,6 @@ final class TripDetailView: UIView {
     func renderTravelers(_ travelers: [Traveler]) {
         travelerSection.renderTravelers(travelers)
     }
-
 }
 
 extension TripDetailView {
@@ -452,10 +458,7 @@ extension TripDetailView {
                 .centerY(to: dateStatusSection.centerYAnchor)
         }
         
-        let actionSection = ActionSectionView()
         let importantNoticeSection = ImportantNoticeSectionView()
-        let facilitiesView = FacilitiesSectionView(title: "This Trip Includes",
-                                                   items: [])
         
         // URUTAN VSTACK
         contentStackView.addArrangedSubview(activityDetailView)
@@ -472,6 +475,7 @@ extension TripDetailView {
         contentStackView.addArrangedSubview(travelerSection)
         contentStackView.addArrangedSubview(vendorSectionView)
         contentStackView.addArrangedSubview(whatsAppSection)
+        contentStackView.addArrangedSubview(addCalendarSection)
         contentStackView.addArrangedSubview(importantNoticeSection)
         //        contentStackView.addArrangedSubview(addressSection)
         

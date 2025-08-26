@@ -125,7 +125,6 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
             
             do {
                 try eventStore.save(event, span: .thisEvent, commit: true)
-                print("Event saved with attendees.")
             } catch {
                 print("Failed to save event: \(error.localizedDescription)")
             }
@@ -151,8 +150,10 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         let today = Date()
         
         let isParticipantsMoreThanOne = data.participants > 1
+
         print("data.date:\(data.date)")
-        let isPlanner = true // todo update if BE complete
+        let isPlanner = data.isPlanner
+
         let isUpcoming = data.date >= today
         
         return isParticipantsMoreThanOne && isPlanner && isUpcoming

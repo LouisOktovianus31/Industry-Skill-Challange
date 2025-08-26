@@ -38,9 +38,11 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
             self?.viewModel.didTapLocation()
         }
         thisView.onWhatsAppTapped = { [weak self] in
+
             // Ganti dengan link group WA asli dari backend kalau ada
             self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
         }
+
         viewModel.onViewDidLoad()
     }
     
@@ -65,10 +67,6 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         print("Invite traveler tapped")
         
     }
-    
-    //    @objc private func locationButtonTapped() {
-    //        viewModel.didTapLocation()
-    //    }
     
     private let viewModel: TripDetailViewModelProtocol
     private let thisView: TripDetailView = TripDetailView()

@@ -11,6 +11,7 @@ enum APIConfig {
 //    static let baseURL = "https://guffnieowbgkilwcjkks.supabase.co/rest/v1/"
 //    static let baseURL = "https://54.79.215.81.nip.io/rest/v1/"
     static let baseURL = "https://54.253.165.200.nip.io/rest/v1/"
+//    static let baseURL = "http://54.79.215.81:4000/rest/v1"
 }
 
 protocol EndpointProtocol {

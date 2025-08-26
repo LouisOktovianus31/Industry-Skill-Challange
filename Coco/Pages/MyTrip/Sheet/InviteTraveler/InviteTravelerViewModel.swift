@@ -52,8 +52,9 @@ private extension InviteTravelerViewModel {
 extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
     func sendInviteTravelerRequest() {
         Task { @MainActor in
+            action?.setStateViewData(StateViewData(.loading))
+
             do {
-                
                 let bookingId = data?.bookingId ?? 0
                 let emails = collectionViewModel.emailTravelerListData.map { $0.email }
                 
@@ -62,6 +63,7 @@ extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
                     emails: emails
                 ).values
                 
+                action?.setStateViewData(nil)
                 delegate?.notifyInviteTravellerComplete()
             } catch {
                 
@@ -95,7 +97,7 @@ extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
             return
         }
         
-        guard collectionViewModel.emailTravelerListData.count < (data?.participants ?? 0) - 1 else {
+        guard collectionViewModel.emailTravelerListData.count < (data?.participants ?? 0) else {
             emailInputViewModel.error = true
             emailInputViewModel.errorMessage = "Cannot add more travelers."
             return
