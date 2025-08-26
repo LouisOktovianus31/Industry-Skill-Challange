@@ -41,6 +41,7 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
                     // Ganti dengan link group WA asli dari backend kalau ada
                     self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
                 }
+        thisView.action = self
         viewModel.onViewDidLoad()
     }
     
@@ -66,17 +67,13 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         
     }
     
-//    @objc private func locationButtonTapped() {
-//        viewModel.didTapLocation()
-//    }
-    
     private let viewModel: TripDetailViewModelProtocol
     private let thisView: TripDetailView = TripDetailView()
     
     private var sheetNav: UINavigationController?
 }
 
-extension TripDetailViewController: TripDetailViewModelAction {
+extension TripDetailViewController: TripDetailViewModelAction {    
     func onAddCalendarDidTap() {
         viewModel.addEventCalendar()
     }

@@ -15,6 +15,7 @@ protocol InviteTravelerViewModelAction: AnyObject {
     func configureListEmailView(viewModel: InviteTravellerCollectionViewModelProtocol)
     
     func onConfirmInviteTravelerDidTap()
+    func setStateViewData(_ stateData: StateViewData?)
 }
 protocol InviteTravelerViewModelProtocol: AnyObject {
     var delegate: InviteTravelerViewModelDelegate? { get set }

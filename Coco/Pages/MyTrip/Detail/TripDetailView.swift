@@ -9,7 +9,7 @@ struct HostDetail {
 
 struct BookingDetailDataModel {
     let bookingId: Int
-//    let userId: Int
+    //    let userId: Int
     let imageString: String
     let activityName: String
     let packageName: String
@@ -92,7 +92,7 @@ extension BookingDetailDataModel {
         
         self.status = .init(text: trip.status.capitalized, style: style)
         bookingId     = trip.bookingId
-//        userId        = trip.userId
+        //        userId        = trip.userId
         imageString   = trip.destinationImage ?? ""
         activityName  = trip.activityTitle
         packageName   = trip.packageName
@@ -125,6 +125,10 @@ final class TripDetailView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
+        
+        addCalendarSection.onTap = { [weak self] in
+            self?.action?.onAddCalendarDidTap()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -260,7 +264,8 @@ final class TripDetailView: UIView {
     
     // Calendar
     private let addCalendarSection = AddCalendarSectionView()
-
+    weak var action: TripDetailViewModelAction?
+    
     private lazy var bookingDateSection: UIView = createSectionTitle(title: "Date Booking", view: bookingDateLabel)
     private lazy var bookingDateLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .body, weight: .bold),
@@ -485,7 +490,6 @@ final class TripDetailView: UIView {
     func renderTravelers(_ travelers: [Traveler]) {
         travelerSection.renderTravelers(travelers)
     }
-
 }
 
 private extension TripDetailView {
@@ -494,14 +498,14 @@ private extension TripDetailView {
         print("Location row tapped")
     }
     
-//    private func insertFacilitiesSection(_ view: UIView) {
-//        // Contoh: taruh setelah locationRow (cari index-nya di stack)
-//        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
-//            contentStackView.insertArrangedSubview(view, at: idx + 1)
-//        } else {
-//            contentStackView.addArrangedSubview(view)
-//        }
-//    }
+    //    private func insertFacilitiesSection(_ view: UIView) {
+    //        // Contoh: taruh setelah locationRow (cari index-nya di stack)
+    //        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
+    //            contentStackView.insertArrangedSubview(view, at: idx + 1)
+    //        } else {
+    //            contentStackView.addArrangedSubview(view)
+    //        }
+    //    }
     
     func setupView() {
         // 1) Tambah scrollView lalu isi dengan stack

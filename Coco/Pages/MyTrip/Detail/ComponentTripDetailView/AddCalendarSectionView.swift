@@ -19,7 +19,7 @@ final class AddCalendarSectionView: UIView {
     
     private lazy var imageView: UIImageView = createImageView()
     private lazy var labelView: UILabel = createLabelView()
-    weak var action: TripDetailViewModelAction?
+    var onTap: (() -> Void)?
 }
 
 // MARK: Private
@@ -68,6 +68,6 @@ private extension AddCalendarSectionView {
     }
     
     @objc func didTap() {
-        action?.onAddCalendarDidTap()
+        onTap?()
     }
 }
