@@ -72,6 +72,15 @@ private extension WhatsAppSectionView {
     }
     
     @objc func didTap() {
+        let originalColor = backgroundColor
+        UIView.animate(withDuration: 0.1, animations: {
+            self.backgroundColor = UIColor.systemGray5
+        }) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.backgroundColor = originalColor
+            }
+        }
+        
         onTap?()
     }
 }

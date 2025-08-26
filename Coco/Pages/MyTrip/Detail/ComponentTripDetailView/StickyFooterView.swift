@@ -21,7 +21,7 @@ final class StickyFooterView: UIView {
         let sep = UIView()
         sep.backgroundColor = Token.additionalColorsLine
 
-        button.setTitle("Invite traveler to space", for: .normal)
+        button.setTitle("Invite traveler to this trip", for: .normal)
         button.setTitleColor(Token.additionalColorsWhite, for: .normal)
         button.backgroundColor = Token.mainColorPrimary
         button.layer.cornerRadius = 25

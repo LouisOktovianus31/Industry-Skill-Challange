@@ -105,7 +105,7 @@ private extension MyTripListCollectionViewController {
             section.boundarySupplementaryItems = [sectionHeader]
             section.interGroupSpacing = CGFloat(20)
             section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 8.0, trailing: 0)
-
+            
             return section
         }
     }
