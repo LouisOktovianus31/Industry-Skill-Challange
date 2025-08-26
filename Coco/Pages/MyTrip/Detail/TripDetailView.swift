@@ -1,112 +1,7 @@
 import Foundation
 import UIKit
 
-struct HostDetail {
-    let name: String
-    let email: String
-    let phone: String
-}
 
-struct BookingDetailDataModel {
-    let bookingId: Int
-//    let userId: Int
-    let imageString: String
-    let activityName: String
-    let packageName: String
-    let location: String
-    let bookingDateDisplay: String
-    let status: StatusLabel
-    let paxNumber: Int
-    let priceText: String
-    let address: String
-    let host: HostDetail?
-    let bookedByName: String
-    let facilities: [String]
-    let includedAccessories: [String]
-    
-    struct StatusLabel {
-        let text: String
-        let style: CocoStatusLabelStyle
-    }
-    
-    init(bookingDetail: BookingDetails) {
-        var bookingStatus: String = bookingDetail.status
-        var statusStyle: CocoStatusLabelStyle = .pending
-        
-        self.bookedByName = bookingDetail.plannerName ?? ""
-        
-        //        let formatter: DateFormatter = DateFormatter()
-        //        formatter.dateFormat = "YYYY-MM-dd"
-        
-        if let targetDate = Formatters.apiDateParser.date(from: bookingDetail.activityDate ?? "") {
-            let cal = Calendar(identifier: .gregorian)
-            let today = cal.startOfDay(for: Date())
-            let day = cal.startOfDay(for: targetDate)
-            
-            if day < today {
-                bookingStatus = "Completed"
-                statusStyle = .success
-            }
-            else if day > today {
-                bookingStatus = "Upcoming"
-                statusStyle = .refund
-            }
-        }
-        
-        status = StatusLabel(text: bookingStatus, style: statusStyle)
-        bookingId = bookingDetail.bookingId
-        imageString = bookingDetail.destinationImage ?? ""
-        activityName = bookingDetail.activityTitle ?? ""
-        packageName = bookingDetail.packageName ?? ""
-        location = bookingDetail.destinationName ?? ""
-        paxNumber = bookingDetail.participants ?? 0
-        //        price = bookingDetail.totalPrice
-        address = bookingDetail.address ?? ""
-        //        bookingDateText = bookingDetail.activityDate
-        
-        // display date
-        if let d = Formatters.apiDateParser.date(from: bookingDetail.activityDate ?? "") {
-            bookingDateDisplay = Formatters.tripDateDisplay.string(from: d)
-        } else {
-            bookingDateDisplay = bookingDetail.activityDate ?? ""
-        }
-        
-        // display price
-        priceText = Formatters.idr(bookingDetail.totalPrice ?? 0)
-        
-        if let vendor = bookingDetail.host {
-            self.host = HostDetail(name: vendor.name, email: vendor.email ?? "host@gmail.com", phone: vendor.phone ?? "+62 812 3456 789")
-        } else {
-            self.host = nil
-        }
-        
-        // facilities
-        self.facilities = TripFacilitiesProvider.shared.facilities(for: bookingDetail)
-        self.includedAccessories = bookingDetail.includedAccessories
-    }
-}
-
-extension BookingDetailDataModel {
-    init(trip: TripBookingDetails) {
-        let style: CocoStatusLabelStyle = trip.date < Calendar.current.startOfDay(for: Date()) ? .success : .refund
-        
-        self.status = .init(text: trip.status.capitalized, style: style)
-        bookingId     = trip.bookingId
-//        userId        = trip.userId
-        imageString   = trip.destinationImage ?? ""
-        activityName  = trip.activityTitle
-        packageName   = trip.packageName
-        location      = trip.destinationName
-        paxNumber     = trip.participants
-        address       = trip.destinationName
-        bookingDateDisplay = Formatters.tripDateDisplay.string(from: trip.date)
-        priceText = Formatters.idr((trip.totalPrice as NSDecimalNumber).doubleValue)
-        host = nil
-        bookedByName = trip.plannerName
-        facilities = trip.includedAccessories
-        includedAccessories = trip.includedAccessories
-    }
-}
 
 final class TripFacilitiesProvider {
     static let shared = TripFacilitiesProvider()
@@ -135,46 +30,9 @@ final class TripDetailView: UIView {
     
     private let qrSection = QRCodeSection()
     
-    func configureView(_ data: BookingDetailDataModel) {
-        activityImage.loadImage(from: URL(string: data.imageString))
-        activityTitle.text = data.activityName
-        activityLocationTitle.text = data.location
-        //        activityDescriptionTitle.text = "Package"
-        activityDescription.text = data.packageName
-        
-        activityDateLabel.text = data.bookingDateDisplay
-        paxNumberLabel.text = "\(data.paxNumber) person"
-        
-        priceDetailTitle.text = "Pay on trip"
-        priceDetailPrice.text = data.priceText
-        
-        addressLabel.text = data.address
-        locationSection.configure(text: data.location)
-        
-        bookedByNameValueLabel.text = data.bookedByName
-        facilitiesSectionView.isHidden = data.includedAccessories.isEmpty
-        facilitiesSectionView.update(items: data.includedAccessories)
-        
-        whatsAppSection.configure(title: "Join the Trip WhatsApp Community")
-        
-        let payload = "booking:\(data.bookingId)"
-        qrSection.configure(title: "View QR Code", payload: payload)
-        
-        if let host = data.host {
-            vendorNameValueLabel.text  = host.name
-            vendorEmailValueLabel.text = host.email
-            vendorPhoneValueLabel.text = host.phone
-            vendorSectionView.isHidden = false
-        } else {
-            vendorNameValueLabel.text  = "Jeon Jungkook"
-            vendorEmailValueLabel.text = "host@gmail.com"
-            vendorPhoneValueLabel.text = "+62 8123456789"
-            vendorSectionView.isHidden = false
-        }
-        
-    }
     
     func configureStatusLabelView(with view: UIView) {
+        view.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.addSubview(view)
         view.layout {
             $0.leading(to: statusLabel.leadingAnchor)
@@ -399,16 +257,16 @@ final class TripDetailView: UIView {
         return label
     }()
     
-    private lazy var vendorEmailKeyLabel: UILabel = {
-        let label = UILabel(
-            font: .jakartaSans(forTextStyle: .callout, weight: .regular),
-            textColor: Token.grayscale90,
-            numberOfLines: 1
-        )
-        label.text = "Email"
-        return label
-    }()
-    
+//    private lazy var vendorEmailKeyLabel: UILabel = {
+//        let label = UILabel(
+//            font: .jakartaSans(forTextStyle: .callout, weight: .regular),
+//            textColor: Token.grayscale90,
+//            numberOfLines: 1
+//        )
+//        label.text = "Email"
+//        return label
+//    }()
+//    
     private lazy var vendorPhoneKeyLabel: UILabel = {
         let label = UILabel(
             font: .jakartaSans(forTextStyle: .callout, weight: .regular),
@@ -430,16 +288,16 @@ final class TripDetailView: UIView {
         return label
     }()
     
-    private lazy var vendorEmailValueLabel: UILabel = {
-        let label = UILabel(
-            font: .jakartaSans(forTextStyle: .callout, weight: .semibold),
-            textColor: Token.additionalColorsBlack,
-            numberOfLines: 1
-        )
-        label.textAlignment = .right
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }()
+//    private lazy var vendorEmailValueLabel: UILabel = {
+//        let label = UILabel(
+//            font: .jakartaSans(forTextStyle: .callout, weight: .semibold),
+//            textColor: Token.additionalColorsBlack,
+//            numberOfLines: 1
+//        )
+//        label.textAlignment = .right
+//        label.lineBreakMode = .byTruncatingTail
+//        return label
+//    }()
     
     private lazy var vendorPhoneValueLabel: UILabel = {
         let label = UILabel(
@@ -485,20 +343,58 @@ final class TripDetailView: UIView {
 
 }
 
-private extension TripDetailView {
+extension TripDetailView {
     @objc func didTapLocationRow() {
         // utk lanjut ke gmaps
         print("Location row tapped")
     }
     
-//    private func insertFacilitiesSection(_ view: UIView) {
-//        // Contoh: taruh setelah locationRow (cari index-nya di stack)
-//        if let idx = contentStackView.arrangedSubviews.firstIndex(of: locationRow) {
-//            contentStackView.insertArrangedSubview(view, at: idx + 1)
-//        } else {
-//            contentStackView.addArrangedSubview(view)
-//        }
-//    }
+    func render(_ state: TripDetailViewState) {
+            // hero
+            activityImage.loadImage(from: state.imageURL)
+            activityTitle.text = state.title
+            activityLocationTitle.text = state.locationText
+
+            // info kecil
+            activityDateLabel.text = state.dateText
+            paxNumberLabel.text = state.paxText
+
+            // package & price
+            activityDescription.text = state.packageName
+            priceDetailTitle.text = "Pay on trip"
+            priceDetailPrice.text = state.priceText
+
+            // meeting point
+            addressLabel.text = state.addressText
+            locationSection.configure(text: state.locationText)
+
+            bookedByNameValueLabel.text = state.plannerName
+        
+            vendorNameValueLabel.text  = state.vendorName
+            vendorPhoneValueLabel.text = state.vendorContact
+
+            // facilities / accessories
+            facilitiesSectionView.isHidden = !state.showFacilities
+            facilitiesSectionView.update(items: state.includedAccessories)
+
+            // WhatsApp & QR
+            whatsAppSection.configure(title: state.waTitle)
+            qrSection.configure(title: state.qrTitle, payload: state.qrPayload)
+
+            // Vendor
+//            if let v = state.vendor {
+//                vendorNameValueLabel.text  = v.name
+//                vendorEmailValueLabel.text = v.email
+//                vendorPhoneValueLabel.text = v.phone
+//                vendorSectionView.isHidden = false
+//            } else {
+//                vendorSectionView.isHidden = true
+//            }
+        }
+    
+    func clearStatusView() {
+        statusLabel.subviews.forEach { $0.removeFromSuperview() }
+    }
     
     func setupView() {
         // 1) Tambah scrollView lalu isi dengan stack
@@ -770,9 +666,9 @@ private extension TripDetailView {
     func createVendorSection() -> UIView {
         let container = UIView()
         let rowName  = createKeyValueRow(key: vendorNameKeyLabel,  value: vendorNameValueLabel)
-        let rowEmail = createKeyValueRow(key: vendorEmailKeyLabel, value: vendorEmailValueLabel)
+//        let rowEmail = createKeyValueRow(key: vendorEmailKeyLabel, value: vendorEmailValueLabel)
         let rowPhone = createKeyValueRow(key: vendorPhoneKeyLabel, value: vendorPhoneValueLabel)
-        let stack = UIStackView(arrangedSubviews: [vendorTitleLabel, rowName, rowEmail, rowPhone])
+        let stack = UIStackView(arrangedSubviews: [vendorTitleLabel, rowName, rowPhone])
         stack.axis = .vertical
         stack.spacing = 8
         container.addSubview(stack)

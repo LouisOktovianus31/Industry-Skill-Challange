@@ -35,12 +35,12 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         title = "Trip Space"
         
         thisView.onLocationTapped = { [weak self] in
-                self?.viewModel.didTapLocation()
-            }
+            self?.viewModel.didTapLocation()
+        }
         thisView.onWhatsAppTapped = { [weak self] in
-                    // Ganti dengan link group WA asli dari backend kalau ada
-                    self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
-                }
+            // Ganti dengan link group WA asli dari backend kalau ada
+            self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
+        }
         viewModel.onViewDidLoad()
     }
     
@@ -51,7 +51,7 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         item.openInMaps(launchOptions: [
             MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coord),
             MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
-                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+                                                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
         ])
     }
     
@@ -66,9 +66,9 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
         
     }
     
-//    @objc private func locationButtonTapped() {
-//        viewModel.didTapLocation()
-//    }
+    //    @objc private func locationButtonTapped() {
+    //        viewModel.didTapLocation()
+    //    }
     
     private let viewModel: TripDetailViewModelProtocol
     private let thisView: TripDetailView = TripDetailView()
@@ -77,6 +77,28 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
 }
 
 extension TripDetailViewController: TripDetailViewModelAction {
+    func configureView(state: TripDetailViewState) {
+        thisView.render(state)
+        thisView.clearStatusView()
+        
+//        let style: CocoStatusLabelStyle = {
+//            switch state.status.style.lowercased() {
+//            case "success", "completed": return .success
+//            case "refund":                 return .refund
+//            case "pending":                return .pending
+//            default:                       return .pending
+//            }
+//        }()
+        
+        let labelVC = CocoStatusLabelHostingController(
+            title: state.status.text,
+            style: state.status.style
+        )
+        addChild(labelVC)
+        thisView.configureStatusLabelView(with: labelVC.view)
+        labelVC.didMove(toParent: self)
+    }
+    
     func onAddCalendarDidTap() {
         viewModel.addEventCalendar()
     }
@@ -93,25 +115,24 @@ extension TripDetailViewController: TripDetailViewModelAction {
         }
     }
     
-    func configureView(dataModel: BookingDetailDataModel) {
-        thisView.configureView(dataModel)
-        
-        let labelVC: CocoStatusLabelHostingController = CocoStatusLabelHostingController(
-            title: dataModel.status.text,
-            style: dataModel.status.style
-        )
-        addChild(labelVC)
-        thisView.configureStatusLabelView(with: labelVC.view)
-        labelVC.didMove(toParent: self)
+    //    func configureView(dataModel: BookingDetailDataModel) {
+    //        thisView.configureView(dataModel)
+    //
+    //        let labelVC: CocoStatusLabelHostingController = CocoStatusLabelHostingController(
+    //            title: dataModel.status.text,
+    //            style: dataModel.status.style
+    //        )
+    //        addChild(labelVC)
+    //        thisView.configureStatusLabelView(with: labelVC.view)
+    //        labelVC.didMove(toParent: self)
+    //    }
+    
+    func openExternalURL(_ url: URL) {
+        DispatchQueue.main.async {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
     }
     
-
-    func openExternalURL(_ url: URL) {
-            DispatchQueue.main.async {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
-        }
-
     private func addTripMemberTapped(viewModel: InviteTravelerViewModelProtocol) {
         let inviteTravellerViewController = InviteTravelerViewController(viewModel: viewModel)
         
