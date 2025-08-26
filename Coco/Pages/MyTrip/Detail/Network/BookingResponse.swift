@@ -19,6 +19,7 @@ struct TripBookingDetails: JSONDecodable {
     let bookingId: Int
 //    let userId: Int
     let date: Date
+    let isPlanner: Bool
     let plannerName: String
     let participants: Int
     let totalPrice: Decimal
@@ -38,6 +39,7 @@ struct TripBookingDetails: JSONDecodable {
         bookingId: Int,
 //        userId: Int,
         date: Date,
+        isPlanner: Bool,
         plannerName: String,
         participants: Int,
         totalPrice: Decimal,
@@ -55,6 +57,7 @@ struct TripBookingDetails: JSONDecodable {
         self.bookingId = bookingId
 //        self.userId = userId
         self.date = date
+        self.isPlanner = isPlanner
         self.plannerName = plannerName
         self.participants = participants
         self.totalPrice = totalPrice
@@ -74,6 +77,7 @@ struct TripBookingDetails: JSONDecodable {
         case bookingId          = "booking_id"
 //        case userId             = "user_id"
         case date
+        case isPlanner         = "is_planner"
         case plannerName       = "planner_name"
         case participants
         case totalPrice         = "total_price"
@@ -120,6 +124,7 @@ struct TripBookingDetails: JSONDecodable {
             totalPrice = 0
         }
         
+        isPlanner = try c.decode(Bool.self, forKey: .isPlanner)
         plannerName = try c.decodeIfPresent(String.self, forKey: .plannerName) ?? ""
         status           = try c.decode(String.self, forKey: .status)
         activityTitle    = try c.decode(String.self, forKey: .activityTitle)
@@ -149,6 +154,7 @@ private extension TripBookingDetails {
             bookingId: 0,
 //            userId: 0,
             date: Date(),
+            isPlanner: false,
             plannerName: "-",
             participants: 0,
             totalPrice: 0,

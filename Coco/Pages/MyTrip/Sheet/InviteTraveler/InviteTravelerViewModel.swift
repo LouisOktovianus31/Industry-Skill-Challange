@@ -97,7 +97,7 @@ extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
             return
         }
         
-        guard collectionViewModel.emailTravelerListData.count < (data?.participants ?? 0) - 1 else {
+        guard collectionViewModel.emailTravelerListData.count < (data?.participants ?? 0) else {
             emailInputViewModel.error = true
             emailInputViewModel.errorMessage = "Cannot add more travelers."
             return
