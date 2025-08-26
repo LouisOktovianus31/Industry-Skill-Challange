@@ -30,8 +30,8 @@ final class TripLocationProvider {
         return nil
     }
 
-    func mapItem(for data: BookingDetailDataModel) -> MKMapItem? {
-        return mapItem(for: data.location)
-    }
+//    func mapItem(for data: BookingDetailDataModel) -> MKMapItem? {
+//        return mapItem(for: data.location)
+//    }
 }
 

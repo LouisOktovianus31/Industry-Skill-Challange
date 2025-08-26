@@ -8,7 +8,8 @@
 import Foundation
 
 protocol TripDetailViewModelAction: AnyObject {
-    func configureView(dataModel: BookingDetailDataModel)
+//    func configureView(dataModel: BookingDetailDataModel)
+    func configureView(state: TripDetailViewState)
     func openExternalURL(_ url: URL)
     func configureFooter(viewModel: InviteTravelerViewModelProtocol)
     func closeInviteTravelerView()

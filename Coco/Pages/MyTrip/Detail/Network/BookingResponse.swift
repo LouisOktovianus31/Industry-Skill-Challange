@@ -33,6 +33,8 @@ struct TripBookingDetails: JSONDecodable {
     let importantNotice: String?
     let includedAccessories: [String]
     let memberEmails: [String]
+    let vendorName: String
+    let vendorContact: String
     
     // MARK: - Memberwise init supaya bisa bikin placeholder
     init(
@@ -52,7 +54,9 @@ struct TripBookingDetails: JSONDecodable {
         latitude: Double,
         importantNotice: String?,
         includedAccessories: [String],
-        memberEmails: [String]
+        memberEmails: [String],
+        vendorName: String,
+        vendorContact: String
     ) {
         self.bookingId = bookingId
 //        self.userId = userId
@@ -71,6 +75,8 @@ struct TripBookingDetails: JSONDecodable {
         self.importantNotice = importantNotice
         self.includedAccessories = includedAccessories
         self.memberEmails = memberEmails
+        self.vendorName = vendorName
+        self.vendorContact = vendorContact
     }
     
     enum CodingKeys: String, CodingKey {
@@ -86,11 +92,13 @@ struct TripBookingDetails: JSONDecodable {
         case packageName        = "package_name"
         case destinationName    = "destination_name"
         case destinationImage   = "destination_image"
-        case longitude
-        case latitude
+        case longitude          = "longitude"
+        case latitude           = "latitude"
         case importantNotice    = "important_notice"
         case includedAccessories = "included_accessories"
         case memberEmails       = "member_emails"
+        case vendorName        = "vendor_name"
+        case vendorContact      = "vendor_contact"
     }
     
     init(from decoder: Decoder) throws {
@@ -126,6 +134,8 @@ struct TripBookingDetails: JSONDecodable {
         
         isPlanner = try c.decode(Bool.self, forKey: .isPlanner)
         plannerName = try c.decodeIfPresent(String.self, forKey: .plannerName) ?? ""
+        vendorName = try c.decodeIfPresent(String.self, forKey: .vendorName) ?? ""
+        vendorContact = try c.decodeIfPresent(String.self, forKey: .vendorContact) ?? ""
         status           = try c.decode(String.self, forKey: .status)
         activityTitle    = try c.decode(String.self, forKey: .activityTitle)
         packageName      = try c.decode(String.self, forKey: .packageName)
@@ -133,14 +143,13 @@ struct TripBookingDetails: JSONDecodable {
         destinationImage = try c.decodeIfPresent(String.self, forKey: .destinationImage)
         
         // longitude & latitude bisa string atau number
-        func decodeCoord(_ key: CodingKeys) throws -> Double {
-            if let s = try? c.decode(String.self, forKey: key),
-               let v = Double(s) { return v }
-            if let v = try? c.decode(Double.self, forKey: key) { return v }
+        func double(_ key: CodingKeys) throws -> Double {
+            if let d = try? c.decode(Double.self, forKey: key) { return d }
+            if let s = try? c.decode(String.self, forKey: key), let d = Double(s) { return d }
             return 0
         }
-        longitude = try decodeCoord(.longitude)
-        latitude  = try decodeCoord(.latitude)
+        longitude = try double(.longitude)
+        latitude  = try double(.latitude)
         
         importantNotice    = try c.decodeIfPresent(String.self, forKey: .importantNotice)
         includedAccessories = (try? c.decode([String].self, forKey: .includedAccessories)) ?? []
@@ -167,7 +176,11 @@ private extension TripBookingDetails {
             latitude: 0,
             importantNotice: nil,
             includedAccessories: [],
-            memberEmails: []
+            memberEmails: [],
+            vendorName: "-",
+            vendorContact: "-"
         )
     }
 }
+
+
