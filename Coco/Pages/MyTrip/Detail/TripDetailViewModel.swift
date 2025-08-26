@@ -124,7 +124,6 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
             event.endDate = Calendar.current.date(byAdding: .day, value: 0, to: event.startDate)
             event.isAllDay = true
             event.calendar = eventStore.defaultCalendarForNewEvents
-            
             do {
                 try eventStore.save(event, span: .thisEvent, commit: true)
             } catch {
@@ -150,12 +149,8 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         guard let data else { return false }
         
         let today = Date()
-        
         let isParticipantsMoreThanOne = data.participants > 1
-
-        print("data.date:\(data.date)")
         let isPlanner = data.isPlanner
-
         let isUpcoming = data.date >= today
         
         return isParticipantsMoreThanOne && isPlanner && isUpcoming
