@@ -35,6 +35,10 @@ class InviteTravelerViewController: UIViewController {
 }
 
 extension InviteTravelerViewController: InviteTravelerViewModelAction {
+    func setStateViewData(_ stateData: StateViewData?) {
+        thisView.setStateViewData(stateData)
+    }
+    
     func onConfirmInviteTravelerDidTap() {
         viewModel.sendInviteTravelerRequest()
     }

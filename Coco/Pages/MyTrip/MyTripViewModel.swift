@@ -40,28 +40,34 @@ extension MyTripViewModel: MyTripViewModelProtocol {
         actionDelegate?.contructCollectionView(viewModel: collectionViewModel)
         responses = []
         
-        Task { @MainActor in
-            actionDelegate?.setStateViewData(StateViewData(.loading))
+        Task {
+            await MainActor.run {
+                actionDelegate?.setStateViewData(StateViewData(.loading))
+            }
             
             do {
                 let response: [BookingDetails] = try await fetcher.fetchTripBookingList(
-                    request: TripBookingListSpec(userId: UserDefaults.standard.value(forKey: "user-id") as? String ?? "")
+                    request: TripBookingListSpec(userId: UserDefaults.standard.string(forKey: "user-id") ?? "")
                 ).values
                 
-                responses = response
+                let processedData = await Task.detached(priority: .userInitiated) {
+                    response
+                        .map { MyTripListCardDataModel(bookingDetail: $0) }
+                        .sorted { $0.date < $1.date }
+                }.value
                 
-                allTripData = response
-                    .map({ listData in
-                        MyTripListCardDataModel(bookingDetail: listData)
-                    })
-                    .sorted { $0.date < $1.date }
-                
-                isError = false
-                actionDelegate?.setStateViewData(nil)
-                applyFilter(currentFilter)
+                await MainActor.run {
+                    self.responses = response
+                    self.allTripData = processedData
+                    self.isError = false
+                    self.actionDelegate?.setStateViewData(nil)
+                    self.applyFilter(self.currentFilter)
+                }
             } catch {
-                actionDelegate?.setStateViewData(StateViewData(.error))
-                isError = true
+                await MainActor.run {
+                    self.actionDelegate?.setStateViewData(StateViewData(.error))
+                    self.isError = true
+                }
             }
         }
     }

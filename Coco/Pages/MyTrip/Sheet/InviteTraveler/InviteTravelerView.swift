@@ -28,6 +28,15 @@ final class InviteTravelerView: UIView {
         inputEmailView.addSubviewAndLayout(view)
     }
     
+    func setStateViewData(_ stateData: StateViewData? = nil) {
+        if let data = stateData {
+            stateView.setData(data)
+            stateView.isHidden = false
+        } else {
+            stateView.isHidden = true
+        }
+    }
+    
     private lazy var inviteButtonContainer: CocoButtonHostingController = CocoButtonHostingController(
         action: { [weak self] in
             guard let self else { return }
@@ -40,14 +49,17 @@ final class InviteTravelerView: UIView {
     )
     private lazy var inputEmailView: UIView = UIView()
     private lazy var emailListView: UIView = UIView()
+    private lazy var stateView: StateView = StateView()
+    
     weak var action: InviteTravelerViewModelAction?
 }
 
 private extension InviteTravelerView {
     func setupViews() {
         backgroundColor = Token.additionalColorsWhite
+        stateView.isHidden = true
         
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [inputEmailView, emailListView, inviteButtonContainer.view])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [inputEmailView, emailListView, stateView, inviteButtonContainer.view])
         
         stackView.axis = .vertical
         

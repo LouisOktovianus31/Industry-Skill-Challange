@@ -24,7 +24,7 @@ struct StateViewData {
         case .empty:
             self.message = "Data is empty"
             self.isLoading = false
-            self.image = UIImage(named: "emptyIcon")
+            self.image = CocoIcon.icEmptyIcon.image
         case .loading:
             self.message = "Loading..."
             self.isLoading = true
@@ -32,7 +32,7 @@ struct StateViewData {
         case .error:
             self.message = "Something went wrong"
             self.isLoading = false
-            self.image = UIImage(named: "emptyIcon")
+            self.image = CocoIcon.icEmptyIcon.image
         }
     }
 }

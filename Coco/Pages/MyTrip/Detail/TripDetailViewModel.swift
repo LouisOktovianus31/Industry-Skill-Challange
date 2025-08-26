@@ -66,24 +66,23 @@ private extension TripDetailViewModel {
     func fetchData() {
         guard let fetcher, let bookingId else { return }
         
-        Task { [weak self] in
+        Task { @MainActor in
             do {
                 let details = try await fetcher.fetchTripDetail(bookingId: bookingId)
                 await MainActor.run {
-                    self?.data = details
-                    self?.travelers = details.memberEmails.map {
+                    data = details
+                    travelers = details.memberEmails.map {
                         let name = $0.components(separatedBy: "@").first?.replacingOccurrences(of: ".", with: " ") ?? "Traveler"
                         return Traveler(name: name, email: $0)
                     }
                     updateInviteTravelerViewModel()
                     
-                    self?.actionDelegate?.configureFooter(viewModel: inviteTravelerViewModel)
-                    self?.actionDelegate?.configureView(dataModel: .init(trip: details))
-                    self?.invitesOutput?.didUpdateTravelers(self?.travelers ?? [])
+                    actionDelegate?.configureFooter(viewModel: inviteTravelerViewModel)
+                    actionDelegate?.configureView(dataModel: .init(trip: details))
+                    invitesOutput?.didUpdateTravelers(travelers)
                 }
             } catch {
-                // TODO: tampilkan error state bila perlu
-                print("TripDetail fetch error:", error)
+                //print
             }
         }
     }
@@ -111,7 +110,6 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
             
             do {
                 try eventStore.save(event, span: .thisEvent, commit: true)
-                print("Event saved with attendees.")
             } catch {
                 print("Failed to save event: \(error.localizedDescription)")
             }
@@ -136,8 +134,10 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         let today = Date()
         
         let isParticipantsMoreThanOne = data.participants > 1
+
         print("data.date:\(data.date)")
         let isPlanner = data.isPlanner
+
         let isUpcoming = data.date >= today
         
         return isParticipantsMoreThanOne && isPlanner && isUpcoming
