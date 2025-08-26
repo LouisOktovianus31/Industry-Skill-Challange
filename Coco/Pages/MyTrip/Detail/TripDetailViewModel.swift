@@ -120,7 +120,9 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
             let event = EKEvent(eventStore: eventStore)
             event.title = self.data?.activityTitle ?? "Coco Activity"
             event.startDate = self.data?.date
-            event.endDate = event.startDate.addingTimeInterval(3600*24)
+//            event.endDate = event.startDate.addingTimeInterval(3600*24)
+            event.endDate = Calendar.current.date(byAdding: .day, value: 1, to: event.startDate)!
+            event.isAllDay = true
             event.calendar = eventStore.defaultCalendarForNewEvents
             
             do {
@@ -136,7 +138,7 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         actionDelegate?.configureView(state: state)
 //        actionDelegate?.configureView(dataModel: BookingDetailDataModel(bookingDetail: dataList))
         
-        if let data {
+        if data != nil {
             actionDelegate?.configureView(state: state)
             invitesOutput?.didUpdateTravelers(travelers)
             return
