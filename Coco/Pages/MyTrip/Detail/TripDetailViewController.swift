@@ -42,7 +42,7 @@ final class TripDetailViewController: UIViewController, TripDetailInvitesOutput 
             // Ganti dengan link group WA asli dari backend kalau ada
             self?.open(urlString: "https://chat.whatsapp.com/HJSbMq9vWBS6WT3vLnieXE?mode=ems_copy_h_t")
         }
-
+        thisView.action = self
         viewModel.onViewDidLoad()
     }
     
