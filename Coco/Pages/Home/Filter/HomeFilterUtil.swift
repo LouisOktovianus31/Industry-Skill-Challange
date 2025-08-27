@@ -31,7 +31,8 @@ final class HomeFilterUtil {
         
         // filter by price range
         tempActivities = tempActivities.filter {
-            $0.pricing >= filterDataModel.priceRangeModel.minPrice && $0.pricing <= filterDataModel.priceRangeModel.maxPrice
+            let pricing = Double($0.pricing) ?? 0
+            return pricing >= filterDataModel.priceRangeModel.minPrice && pricing <= filterDataModel.priceRangeModel.maxPrice
         }
         
         return tempActivities

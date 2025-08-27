@@ -19,3 +19,15 @@ struct MyTripTabItem: TabItemRepresentable {
         return vc
     }
 }
+
+//struct MyTripTabItem: TabItemRepresentable {
+//    var tabTitle: String { "MyTrip" }
+//    var defaultTabIcon: UIImage? { CocoIcon.icTabIconTrip.image }
+//    var selectedTabIcon: UIImage? { CocoIcon.icTabIconTripFill.image }
+//
+//    func makeRootViewController() -> UIViewController {
+//        let viewModel = TripDetailViewModel(bookingId: 1)
+//        let vc: TripDetailViewController = TripDetailViewController(viewModel: viewModel)
+//        return vc
+//    }
+//}

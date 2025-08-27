@@ -15,6 +15,7 @@ final class MyTripCoordinator: BaseCoordinator {
         
         enum Flow {
             case bookingDetail(data: BookingDetails)
+            case rebookingDetail(data: BookingDetails)
         }
     }
     
@@ -28,10 +29,20 @@ final class MyTripCoordinator: BaseCoordinator {
         
         switch input.flow {
         case .bookingDetail(let data):
-            let bookingDetailViewModel: TripDetailViewModel = TripDetailViewModel(data: data)
+            let bookingDetailViewModel: TripDetailViewModel = TripDetailViewModel(bookingId: data.bookingId)
             let bookingDetailViewController: TripDetailViewController = TripDetailViewController(viewModel: bookingDetailViewModel)
             
             start(viewController: bookingDetailViewController)
+            
+        case .rebookingDetail(let data):
+            let viewModel: HomeFormScheduleViewModel = HomeFormScheduleViewModel(
+                input: HomeFormScheduleViewModelInput(
+                    package: ActivityDetailDataModel(data),
+                    selectedPackageId: data.bookingId
+                )
+            )
+            let viewController: HomeFormScheduleViewController = HomeFormScheduleViewController(viewModel: viewModel)
+            start(viewController: viewController)
         }
     }
     
