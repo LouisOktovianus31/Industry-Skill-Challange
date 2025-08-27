@@ -25,6 +25,25 @@ final class TravelerSectionView: UIView {
         return l
     }()
     
+    private let emptyLabel: UILabel = {
+        let label = UILabel(
+            font: .jakartaSans(forTextStyle: .footnote, weight: .semibold),
+            textColor: Token.additionalColorsBlack,
+            numberOfLines: 1
+        )
+        
+        let text = "Only you are in this trip"
+        let attributedString = NSAttributedString(
+            string: text,
+            attributes: [
+                .obliqueness: 0.2
+            ]
+        )
+        label.attributedText = attributedString
+        
+        return label
+    }()
+    
     // Penampung baris-baris chip
     private let rows: UIStackView = {
         let v = UIStackView()
@@ -46,7 +65,7 @@ final class TravelerSectionView: UIView {
             $0.leading(to: leadingAnchor).top(to: topAnchor).trailing(to: trailingAnchor)
         }
         rows.layout {
-            $0.leading(to: leadingAnchor).top(to: titleLabel.bottomAnchor, constant: 12)
+            $0.leading(to: leadingAnchor).top(to: titleLabel.bottomAnchor, constant: 8)
                 .trailing(to: trailingAnchor).bottom(to: bottomAnchor)
         }
     }
@@ -55,7 +74,12 @@ final class TravelerSectionView: UIView {
     // Public API
     func renderTravelers(_ travelers: [Traveler]) {
         cachedTravelers = travelers
-        relayoutChips()
+
+        if cachedTravelers.count == 0 {
+            rows.addArrangedSubview(emptyLabel)
+        } else {
+            relayoutChips()
+        }
     }
     
     override func layoutSubviews() {

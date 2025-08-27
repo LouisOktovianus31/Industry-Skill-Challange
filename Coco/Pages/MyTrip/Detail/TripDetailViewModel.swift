@@ -60,6 +60,12 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         let state = makeState(from: data)
         actionDelegate?.configureView(state: state)
         
+        if data != nil {
+            actionDelegate?.configureView(state: state)
+            invitesOutput?.didUpdateTravelers(travelers)
+            return
+        }
+        
         fetchData()
     }
     
@@ -79,11 +85,17 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
             let event = EKEvent(eventStore: eventStore)
             event.title = self.data?.activityTitle ?? "Coco Activity"
             event.startDate = self.data?.date
-            event.endDate = event.startDate.addingTimeInterval(3600*24)
+            event.endDate = Calendar.current.date(byAdding: .day, value: 0, to: event.startDate)
+            event.isAllDay = true
             event.calendar = eventStore.defaultCalendarForNewEvents
-            
             do {
                 try eventStore.save(event, span: .thisEvent, commit: true)
+                DispatchQueue.main.async {
+                                let interval = event.startDate.timeIntervalSinceReferenceDate
+                                if let url = URL(string: "calshow:\(interval)") {
+                                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                }
+                            }
             } catch {
                 print("Failed to save event: \(error.localizedDescription)")
             }
@@ -94,12 +106,10 @@ extension TripDetailViewModel: TripDetailViewModelProtocol {
         guard let data else { return false }
         
         let today = Date()
-        
         let isParticipantsMoreThanOne = data.participants > 1
         
         print("data.date:\(data.date)")
         let isPlanner = data.isPlanner
-        
         let isUpcoming = data.date >= today
         
         return isParticipantsMoreThanOne && isPlanner && isUpcoming
