@@ -12,14 +12,12 @@ final class InviteTravelerViewModel: ObservableObject {
     weak var action: InviteTravelerViewModelAction?
     
     private let fetcher: InviteTravelerFetcherProtocol?
-    
     init(fetcher: InviteTravelerFetcherProtocol? = InviteTravelerFetcher()) {
         self.fetcher = fetcher
     }
     
     private var data: TripBookingDetails? = nil
-    
-    private lazy var emailInputViewModel: HomeSearchBarViewModel = HomeSearchBarViewModel(
+    private(set) lazy var emailInputViewModel: HomeSearchBarViewModel = HomeSearchBarViewModel(
         leadingIcon: nil,
         placeholderText: "Email",
         currentTypedText: currentTypedText,
@@ -37,6 +35,7 @@ final class InviteTravelerViewModel: ObservableObject {
         
         return viewModel
     }()
+    
     @Published var currentTypedText: String = ""
 }
 
@@ -50,17 +49,19 @@ private extension InviteTravelerViewModel {
 }
 
 extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
-    func sendInviteTravelerRequest() {
-        Task { @MainActor in
+    func sendInviteTravelerRequest() -> Task<Void, Never> {
+        return Task { @MainActor in
             action?.setStateViewData(StateViewData(.loading))
-
+            
             do {
                 let bookingId = data?.bookingId ?? 0
                 let emails = collectionViewModel.emailTravelerListData.map { $0.email }
                 
                 let _: [CreateBookingByEmailsResponse]? = try await fetcher?.fetchCreateBookingByEmails(
-                    bookingId: bookingId,
-                    emails: emails
+                    request: CreateBookingByEmailSpec(
+                        bookingId: bookingId,
+                        emails: emails
+                    )
                 ).values
                 
                 action?.setStateViewData(nil)
@@ -69,7 +70,6 @@ extension InviteTravelerViewModel: InviteTravelerViewModelProtocol {
                 
             }
         }
-
     }
     
     func setData(_ data: TripBookingDetails?) {

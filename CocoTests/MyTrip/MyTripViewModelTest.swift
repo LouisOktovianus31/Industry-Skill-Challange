@@ -27,7 +27,6 @@ struct MyTripViewModelTest {
             fetcher.stubbedFetchTripBookingCompletionResult = (bookingDetails, ())
             
             return TestContext(viewModel: viewModel, actionDelegate: actionDelegate, fetcher: fetcher, bookingDetails: bookingDetails)
-                
         }
     }
     
@@ -37,11 +36,15 @@ struct MyTripViewModelTest {
         let context = try TestContext.setup()
         
         // --- WHEN ---
-        context.viewModel.onViewWillAppear()
+        let task = context.viewModel.onViewWillAppear()
+            await task.value
         
         // --- THEN ---
         #expect(context.actionDelegate.invokedConstructCollectionView)
         #expect(context.actionDelegate.invokedConstructCollectionViewCount == 1)
+        
+        #expect(context.actionDelegate.invokedSetStateViewData)
+        #expect(context.actionDelegate.invokedSetStateViewDataCount == 3)
     }
     
     @Test("apply filter - should filter data correctly when history")

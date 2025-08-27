@@ -36,11 +36,11 @@ final class MyTripViewModel {
 }
 
 extension MyTripViewModel: MyTripViewModelProtocol {
-    func onViewWillAppear() {
+    func onViewWillAppear() -> Task<Void, Never> {
         actionDelegate?.contructCollectionView(viewModel: collectionViewModel)
         responses = []
         
-        Task {
+        return Task {
             await MainActor.run {
                 actionDelegate?.setStateViewData(StateViewData(.loading))
             }
