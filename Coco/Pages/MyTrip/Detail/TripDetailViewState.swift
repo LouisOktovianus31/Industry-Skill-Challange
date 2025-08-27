@@ -64,4 +64,3 @@ struct TripDetailViewState: Equatable {
     let waTitle: String
     let mapCoordinate: Coordinates?
 }
-

@@ -183,4 +183,8 @@ private extension TripBookingDetails {
     }
 }
 
-
+// Handle Long & Lat yang tertukar
+extension TripBookingDetails {
+    var feLatitude: Double {longitude}
+    var feLongitude: Double {latitude}
+}
