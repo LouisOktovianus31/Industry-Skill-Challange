@@ -62,7 +62,7 @@ private extension AddCalendarSectionView {
             textColor: Token.additionalColorsBlack,
             numberOfLines: 1
         )
-        textLabel.text = "Add calendar"
+        textLabel.text = "Add trip to calendar"
         
         return textLabel
     }

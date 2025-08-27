@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 protocol TripDetailViewModelAction: AnyObject {
 //    func configureView(dataModel: BookingDetailDataModel)
@@ -31,4 +32,21 @@ protocol TripDetailViewModelProtocol: AnyObject {
 
 protocol TripDetailInvitesOutput: AnyObject {
     func didUpdateTravelers(_ travelers: [Traveler])
+}
+
+protocol MapOpener {
+    func open(lat: Double, lon: Double, name: String)
+}
+
+struct DefaultMapOpener: MapOpener {
+    func open(lat: Double, lon: Double, name: String) {
+        let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let item = MKMapItem(placemark: MKPlacemark(coordinate: coord))
+        item.name = name
+        item.openInMaps(launchOptions: [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coord),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan:
+                MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        ])
+    }
 }
