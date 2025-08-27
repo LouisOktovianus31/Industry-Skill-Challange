@@ -1,20 +1,6 @@
 import Foundation
 import UIKit
 
-
-final class TripFacilitiesProvider {
-    static let shared = TripFacilitiesProvider()
-    private init() {}
-    
-    func facilities(for trip: TripBookingDetails) -> [String] {
-        return trip.includedAccessories
-    }
-    
-    func facilities(for booking: BookingDetails) -> [String] {
-        return booking.includedAccessories
-    }
-}
-
 final class TripDetailView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -32,7 +18,6 @@ final class TripDetailView: UIView {
     private let facilitiesSectionView = FacilitiesSectionView(title: "This Trip Includes", items: [])
     
     private let qrSection = QRCodeSection()
-    
     
     func configureStatusLabelView(with view: UIView) {
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -63,11 +48,18 @@ final class TripDetailView: UIView {
     
     private lazy var activityDetailView: UIView = createActivityDetailView()
     private lazy var activityImage: UIImageView = createImageView()
-    private lazy var activityTitle: UILabel = UILabel(
-        font: .jakartaSans(forTextStyle: .title2, weight: .semibold),
-        textColor: Token.additionalColorsBlack,
-        numberOfLines: 0
-    )
+    private lazy var activityTitle: UILabel = {
+        let label = UILabel(
+            font: .jakartaSans(forTextStyle: .title2, weight: .semibold),
+            textColor: Token.additionalColorsBlack,
+            numberOfLines: 0
+        )
+        label.lineBreakMode = .byWordWrapping
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .vertical)
+        return label
+    }()
     
     private lazy var activityLocationTitle: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .footnote, weight: .medium),
@@ -100,8 +92,9 @@ final class TripDetailView: UIView {
     private lazy var paxNumberLabel: UILabel = UILabel(
         font: .jakartaSans(forTextStyle: .footnote, weight: .medium),
         textColor: Token.grayscale90,
-        numberOfLines: 2
+        numberOfLines: 1
     )
+    
     
     // Location (Maps)
     private let locationSection = LocationSectionView()
@@ -264,16 +257,6 @@ final class TripDetailView: UIView {
         return label
     }()
     
-//    private lazy var vendorEmailKeyLabel: UILabel = {
-//        let label = UILabel(
-//            font: .jakartaSans(forTextStyle: .callout, weight: .regular),
-//            textColor: Token.grayscale90,
-//            numberOfLines: 1
-//        )
-//        label.text = "Email"
-//        return label
-//    }()
-//    
     private lazy var vendorPhoneKeyLabel: UILabel = {
         let label = UILabel(
             font: .jakartaSans(forTextStyle: .callout, weight: .regular),
@@ -294,17 +277,6 @@ final class TripDetailView: UIView {
         label.lineBreakMode = .byTruncatingTail
         return label
     }()
-    
-//    private lazy var vendorEmailValueLabel: UILabel = {
-//        let label = UILabel(
-//            font: .jakartaSans(forTextStyle: .callout, weight: .semibold),
-//            textColor: Token.additionalColorsBlack,
-//            numberOfLines: 1
-//        )
-//        label.textAlignment = .right
-//        label.lineBreakMode = .byTruncatingTail
-//        return label
-//    }()
     
     private lazy var vendorPhoneValueLabel: UILabel = {
         let label = UILabel(
@@ -334,15 +306,15 @@ final class TripDetailView: UIView {
     // Travelers Section
     private let travelerSection = TravelerSectionView()
     
-    var onInviteTapped: (() -> Void)? {
-        get { travelerSection.onAddTapped }
-        set { travelerSection.onAddTapped = newValue }
-    }
-    
-    var onRemoveTraveler: ((UUID) -> Void)? {
-        get { travelerSection.onRemoveTapped }
-        set { travelerSection.onRemoveTapped = newValue }
-    }
+//    var onInviteTapped: (() -> Void)? {
+//        get { travelerSection.onAddTapped }
+//        set { travelerSection.onAddTapped = newValue }
+//    }
+//    
+//    var onRemoveTraveler: ((UUID) -> Void)? {
+//        get { travelerSection.onRemoveTapped }
+//        set { travelerSection.onRemoveTapped = newValue }
+//    }
     
     func renderTravelers(_ travelers: [Traveler]) {
         travelerSection.renderTravelers(travelers)
@@ -483,56 +455,88 @@ extension TripDetailView {
     }
     
     func createActivityDetailView() -> UIView {
-        let containerView: UIView = UIView()
-        containerView.addSubviews([
-            activityImage,
-            activityTitle,
-            iconCalendarView,
-            iconUserView,
-            activityDateLabel,
-            paxNumberLabel
-        ])
-        
-        activityImage.layout {
-            $0.leading(to: containerView.leadingAnchor) // nempel di sisi kiri container
-                .top(to: containerView.topAnchor) // nempel di atas container
-                .bottom(to: containerView.bottomAnchor, relation: .lessThanOrEqual) // tinggi nya lebih kecil dari container
-        }
+        let container = UIView()
+
+        // 1) Image & Title
+        container.addSubviews([activityImage, activityTitle])
+
+//        activityImage.layout {
+//            $0.leading(to: container.leadingAnchor)
+//                .top(to: container.topAnchor)
+//                .size(105.0)
+//        }
+
         activityTitle.layout {
-            $0.leading(to: activityImage.trailingAnchor, constant: 10.0)
-                .top(to: containerView.topAnchor)
-                .trailing(to: containerView.trailingAnchor)
+            $0.leading(to: activityImage.trailingAnchor, constant: 12)
+                .top(to: container.topAnchor)
+                .trailing(to: container.trailingAnchor)
         }
-        
+
+        // 2) Baris "date" (ikon + text)
+        let dateRow = UIView()
+        dateRow.addSubviews([iconCalendarView, activityDateLabel])
+
         iconCalendarView.layout {
-            $0.leading(to: activityTitle.leadingAnchor)
-                .top(to: activityTitle.bottomAnchor, constant: 4.0)
+            $0.leading(to: dateRow.leadingAnchor)
+                .centerY(to: dateRow.centerYAnchor)
+                .size(20)
         }
         activityDateLabel.layout {
-            $0.leading(to: iconCalendarView.leadingAnchor, constant: 25.0)
-                .top(to: activityTitle.bottomAnchor, constant: 4.0)
-                .trailing(to: containerView.trailingAnchor)
+            $0.leading(to: iconCalendarView.trailingAnchor, constant: 8)
+                .top(to: dateRow.topAnchor)
+                .trailing(to: dateRow.trailingAnchor)
+                .bottom(to: dateRow.bottomAnchor)
         }
-        
+
+        // 3) Baris "person" (icon + text)
+        let personRow = UIView()
+        personRow.addSubviews([iconUserView, paxNumberLabel])
+
         iconUserView.layout {
-            $0.leading(to: activityTitle.leadingAnchor)
-                .top(to: activityTitle.bottomAnchor, constant: 25.0)
-                .bottom(to: containerView.bottomAnchor)
+            $0.leading(to: personRow.leadingAnchor)
+                .centerY(to: personRow.centerYAnchor)
+                .size(20)
         }
         paxNumberLabel.layout {
-            $0.leading(to: iconUserView.leadingAnchor, constant: 25)
-                .top(to: activityDateLabel.bottomAnchor, constant: 4.0)
-                .trailing(to: containerView.trailingAnchor)
-                .bottom(to: containerView.bottomAnchor)
+            $0.leading(to: iconUserView.trailingAnchor, constant: 8)
+                .top(to: personRow.topAnchor)
+                .trailing(to: personRow.trailingAnchor)
+                .bottom(to: personRow.bottomAnchor)
         }
-        return containerView
+        
+        paxNumberLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        activityDateLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        // 4) Stack utk meta info: date + person (jarak konstan)
+        let metaStack = UIStackView(arrangedSubviews: [dateRow, personRow])
+        metaStack.axis = .vertical
+        metaStack.spacing = 6
+        metaStack.alignment = .fill
+        metaStack.distribution = .fill
+
+        container.addSubview(metaStack)
+        metaStack.layout {
+            $0.leading(to: activityTitle.leadingAnchor)
+                .top(to: activityTitle.bottomAnchor, constant: 6)
+                .trailing(to: container.trailingAnchor)
+                .bottom(to: container.bottomAnchor)
+        }
+
+        activityImage.layout {
+            $0.leading(to: container.leadingAnchor)
+                .bottom(to: personRow.bottomAnchor, relation: .greaterThanOrEqual)
+                .top(to: container.topAnchor, relation: .greaterThanOrEqual)
+                
+        }
+
+        return container
     }
-    
+
     func createImageView() -> UIImageView {
         let imageView: UIImageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layout {
-            $0.size(92.0)
+            $0.size(102.0)
         }
         imageView.layer.cornerRadius = 14.0
         imageView.clipsToBounds = true
@@ -627,7 +631,6 @@ extension TripDetailView {
         let container = UIView()
         container.addSubviews([lhs, rhs])
         
-        // ← kunci: prioritas default (bisa ditimpa di instance masing-masing)
         lhs.setContentHuggingPriority(.required, for: .horizontal)
         lhs.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
