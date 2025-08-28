@@ -16,7 +16,7 @@ enum EventFilter {
 final class MyTripViewModel {
     weak var actionDelegate: (any MyTripViewModelAction)?
     
-    private var allTripData: [MyTripListCardDataModel] = []
+    var allTripData: [MyTripListCardDataModel] = []
     private var currentFilter: EventFilter = .upcoming
     
     init(fetcher: MyTripBookingListFetcherProtocol = MyTripBookingListFetcher()) {
@@ -24,7 +24,7 @@ final class MyTripViewModel {
     }
     
     private let fetcher: MyTripBookingListFetcherProtocol
-    private var responses: [BookingDetails] = []
+    var responses: [BookingDetails] = []
     private var isError: Bool = false
     
     private(set) lazy var collectionViewModel: MyTripListCollectionViewModelProtocol = {
@@ -36,11 +36,11 @@ final class MyTripViewModel {
 }
 
 extension MyTripViewModel: MyTripViewModelProtocol {
-    func onViewWillAppear() {
+    func onViewWillAppear() -> Task<Void, Never> {
         actionDelegate?.contructCollectionView(viewModel: collectionViewModel)
         responses = []
         
-        Task {
+        return Task {
             await MainActor.run {
                 actionDelegate?.setStateViewData(StateViewData(.loading))
             }

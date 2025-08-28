@@ -17,7 +17,7 @@ protocol MyTripViewModelAction: AnyObject {
 protocol MyTripViewModelProtocol: AnyObject {
     var actionDelegate: MyTripViewModelAction? { get set }
     
-    func onViewWillAppear()
+    func onViewWillAppear() -> Task<Void, Never>
     
     func applyFilter(_ filter: EventFilter)
 

@@ -109,7 +109,7 @@ struct UserBooking: JSONDecodable {
     }
 }
 
-struct Traveler: Hashable{
+struct Traveler: Hashable {
     let id: UUID = .init()
     let name: String?
     let email: String

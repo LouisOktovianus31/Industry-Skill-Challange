@@ -1,0 +1,58 @@
+[
+    {
+        "id": 151,
+        "user_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "booking_id": 38,
+        "planner_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "status": "Pending",
+        "email": "arin@gmail.com",
+        "date": "2025-08-30T00:00:00.000Z",
+        "is_planner": true,
+        "planner_name": "Arin",
+        "activity_title": "Snorkeling in Piaynemo",
+        "destination_name": "Raja Ampat, West Papua",
+        "destination_image": "https://picsum.photos/seed/dest-raja-ampat/800/600"
+    },
+    {
+        "id": 154,
+        "user_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "booking_id": 39,
+        "planner_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "status": "Pending",
+        "email": "arin@gmail.com",
+        "date": "2025-08-31T00:00:00.000Z",
+        "is_planner": true,
+        "planner_name": "Arin",
+        "activity_title": "Swimming with Manta Rays in Nusa Penida",
+        "destination_name": "Nusa Penida, Bali",
+        "destination_image": "https://picsum.photos/seed/dest-nusa-penida/800/600"
+    },
+    {
+        "id": 155,
+        "user_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "booking_id": 40,
+        "planner_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "status": "Upcoming",
+        "email": "arin@gmail.com",
+        "date": "2025-08-25T00:00:00.000Z",
+        "is_planner": true,
+        "planner_name": "Arin",
+        "activity_title": "Gili Trawangan Coral Reef Exploration",
+        "destination_name": "Gili Trawangan, Bali",
+        "destination_image": "https://picsum.photos/seed/dest-gili-t/800/600"
+    },
+    {
+        "id": 181,
+        "user_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "booking_id": 53,
+        "planner_id": "57c4b464-5ac2-482e-8f27-049eac5a1693",
+        "status": "Upcoming",
+        "email": "arin@gmail.com",
+        "date": "2025-08-29T00:00:00.000Z",
+        "is_planner": true,
+        "planner_name": "Arin",
+        "activity_title": "Swimming with Manta Rays in Nusa Penida",
+        "destination_name": "Nusa Penida, Bali",
+        "destination_image": "https://picsum.photos/seed/dest-nusa-penida/800/600"
+    }
+]

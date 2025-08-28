@@ -6,7 +6,9 @@
 //
 
 protocol InviteTravelerFetcherProtocol {
-    func fetchCreateBookingByEmails(bookingId: Int, emails: [String]) async throws -> JSONArray<CreateBookingByEmailsResponse>
+//    func fetchCreateBookingByEmails(bookingId: Int, emails: [String]) async throws -> JSONArray<CreateBookingByEmailsResponse>
+    
+    func fetchCreateBookingByEmails(request: CreateBookingByEmailSpec) async throws -> JSONArray<CreateBookingByEmailsResponse>
 }
 
 final class InviteTravelerFetcher: InviteTravelerFetcherProtocol {
@@ -15,13 +17,13 @@ final class InviteTravelerFetcher: InviteTravelerFetcherProtocol {
         self.network = network
     }
     
-    func fetchCreateBookingByEmails(bookingId: Int, emails: [String]) async throws -> JSONArray<CreateBookingByEmailsResponse> {
+    func fetchCreateBookingByEmails(request: CreateBookingByEmailSpec) async throws -> JSONArray<CreateBookingByEmailsResponse> {
         try await network.request(
             urlString: CreateBookingByEmailsEndpoint.create.urlString,
             method: .post,
             parameters: [:],
             headers: [:],
-            body: CreateBookingByEmailSpec(bookingId: bookingId, emails: emails)
+            body: request
         )
     }
 }
