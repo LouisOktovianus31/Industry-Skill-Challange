@@ -24,5 +24,5 @@ protocol InviteTravelerViewModelProtocol: AnyObject {
     func onInviteTravelerDidTap(_ email: String)
     func viewDidLoad()
     func setData(_ data: TripBookingDetails?)
-    func sendInviteTravelerRequest()
+    func sendInviteTravelerRequest() -> Task<Void, Never>
 }
